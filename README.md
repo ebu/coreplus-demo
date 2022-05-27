@@ -1,2 +1,2 @@
-# CCDM-demo-kit
-EBU CCDM demonstration starter kit
+# EBUCore+ demo kit
+EBUCore+ demonstration starter kit
