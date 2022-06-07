@@ -30,6 +30,8 @@ To use the CDK we need to compose it with this command.
 docker-compose up -d
 ```
 
+The CDK would be available on the browser at [http://localhost:8888](http://localhost:8888)
+
 ## Contributing
 
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
