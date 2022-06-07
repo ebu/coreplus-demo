@@ -1,0 +1,10 @@
+version: '3'
+services:
+  jupyter-lab:
+        container_name: jupyter-lab
+        build:
+            context: ./
+            dockerfile: Dockerfile
+        image: enapso/jupyter-lab
+        ports:
+            - "8888:8888"
