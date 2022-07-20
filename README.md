@@ -1,6 +1,6 @@
-## EBUCore+ demo kit
+## EBUCore+ Demonstrator Kit
 
-EBUCore+ demonstration starter kit
+EBUCore+ Demonstrator Kit
 
 ## Prerequisites
 
