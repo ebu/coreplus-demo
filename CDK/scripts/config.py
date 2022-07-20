@@ -35,8 +35,7 @@ SHORT_LEGEND = 'https://res.cloudinary.com/alieymsxxn/image/upload/v1655326772/l
 ITABLE_TITLE = '<h4 style="text-alignt:center"><label style="font-weight:bold">Table: </label><label>{title}</label></h4>'
 
 # Config vars for APIs
-TENANT = 'Demo-UUID'
-URL = 'http://host.docker.internal'
+URL = 'https://ebu-cdk.innotrade.com'
 ENAPSO_NAMESPACE = '/enapso-dev/ontology-management'
 GRAPH = 'http://www.ebu.ch/metadata/ontologies/ebucore'
 INDIVIDUAL_NAMESPACE = '/enapso-dev/individual-management'
