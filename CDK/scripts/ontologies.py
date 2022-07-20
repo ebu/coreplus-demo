@@ -32,9 +32,9 @@ def __flatten__(data, parent={}):
     return resultant
 
 
-def __get_access_token__(username, password):
+def __get_access_token__(username, password, tenant):
 
-    url = f'{URL}/auth/realms/{TENANT}/protocol/openid-connect/token'
+    url = f'{URL}/auth/realms/{tenant}/protocol/openid-connect/token'
 
     body = {
         'grant_type': 'password',
@@ -136,11 +136,12 @@ def __extract_labels_from_iris__(iris):
     return labels
 
 
-def __accquire_properties__(iri, username, password):
+def __accquire_properties__(iri, username, password, tenant):
 
     properties = get_properties(iri=iri,
                                 username=username,
                                 password=password,
+                                tenant=tenant,
                                 show_table=False,
                                 raw=True)
 
@@ -174,9 +175,9 @@ def __accquire_properties__(iri, username, password):
     return properties_
 
 
-def __accquire_description__(username, password):
+def __accquire_description__(username, password, tenant):
 
-    access_token = __get_access_token__(username, password)
+    access_token = __get_access_token__(username, password, tenant)
 
     descriptions = __get_descriptions__(access_token=access_token)
 
@@ -197,7 +198,7 @@ def itable_config(opt, init_notebook_mode):
     init_notebook_mode(all_interactive=True)
 
 
-def get_individuals(iri, username, password, show_table=True):
+def get_individuals(iri, username, password, tenant, show_table=True):
     """A function that acquires individuals for the given IRI.
 
     Args:
@@ -212,7 +213,7 @@ def get_individuals(iri, username, password, show_table=True):
 
     url = f'{URL}{INDIVIDUAL_NAMESPACE}/v1/read-individual'
 
-    access_token = __get_access_token__(username=username, password=password)
+    access_token = __get_access_token__(username=username, password=password, tenant=tenant)
 
     headers = {
         'Content-Type': 'application/json',
@@ -241,7 +242,7 @@ def get_individuals(iri, username, password, show_table=True):
     return individuals_df
 
 
-def load_model(username, password):
+def load_model(username, password, tenant):
     """Acquires model for the notebook.
 
     Args:
@@ -271,7 +272,7 @@ def load_model(username, password):
 
                     element.update({f'Description({key})': value})
 
-    access_token = __get_access_token__(username=username, password=password)
+    access_token = __get_access_token__(username=username, password=password, tenant=tenant)
 
     if not access_token:
         return None
@@ -386,7 +387,7 @@ def get_classes_by_iris(source_df,
     return resultant_df
 
 
-def get_properties(iri, username, password, show_table=True, raw=False):
+def get_properties(iri, username, password, tenant, show_table=True, raw=False):
     """Acquires propeties for the given IRI.
 
     Args:
@@ -399,7 +400,7 @@ def get_properties(iri, username, password, show_table=True, raw=False):
     Returns:
         DataFrame: The DataFrame holding the properties.
     """
-    access_token = __get_access_token__(username, password)
+    access_token = __get_access_token__(username, password, tenant)
 
     url = f'{URL}{ENAPSO_NAMESPACE}/v1/get-class-own-properties'
 
@@ -504,243 +505,9 @@ def get_description(source_df, iri, language='en', show_table=True):
 
     return resultant_df
 
-
-# def visualize(username,
-#               password,
-#               source_df,
-#               iris,
-#               title='Network Graph',
-#               show_properties=False,
-#               show_legend=True,
-#               show_subclasses=True,
-#               show_superclasses=True,
-#               language='en',
-#               verbose=True):
-#     """Generates a network object table for the given list of IRIs.
-
-#     Args:
-#         username (string): Username to access API.
-#         password (string): Password to access API.
-#         source_df (DataFrame): Primary DataFrame to query from.
-#         iris (list): List of IRIs to query.
-#         title (str, optional): Title of the graph. Defaults to 'Network Graph'.
-#         show_properties (bool, optional): Flag to add properties to the network object. Defaults to False.
-#         show_legend (bool, optional): Flag to display legend. Defaults to True.
-#         show_subclasses (bool, optional): Flag to extract subclasses for the queried IRIs. Defaults to True.
-#         show_superclasses (bool, optional): Flag to extract superclasses for the queried IRIs. Defaults to True.
-#         language (str, optional): Language to query for. Defaults to 'en'.
-#         verbose (bool, optional): Flag to display extended tooltip. Defaults to True.
-
-#     Returns:
-#         Network: The Network object loaded with nodes and edges to display.
-#     """
-#     # Acquiring required DataFrame
-#     source_df = get_classes_by_iris(source_df=source_df,
-#                                     iris=iris,
-#                                     show_subclasses=show_subclasses,
-#                                     show_superclasses=show_superclasses,
-#                                     language=language,
-#                                     show_table=False)
-#     # Acquiring descriptions for all classes
-#     descriptions = __accquire_description__(
-#         username=username, password=password)
-
-#     # Creating a Network object
-#     network = Network(height='800px', width='100%',
-#                       directed=True, notebook=True, heading=title)
-#     network.repulsion(node_distance=300, spring_length=300)
-
-#     # Forming a dictionary out of involved classes
-#     nodes = {}
-#     for index, row in source_df.iterrows():
-#         iri = row.pop('Class IRI')
-#         if iri not in nodes:
-#             nodes.update({iri: {
-#                 'n_id': iri,
-#                 **row
-#             }
-#             })
-
-#     # Extracting labels from the given list of IRIs
-#     labels = __extract_labels_from_iris__(iris=iris)
-
-#     # Qualifying classes and generating nodes
-#     datatype_property_nodes = {}
-#     object_property_nodes = {}
-#     for key, value in nodes.items():
-#         # Acquiring description for the given IRI
-#         description = descriptions.get(key, {}).get(language, None)
-#         # Forming description string to display
-#         if description:
-#             description_ = ''
-#             for index, char in enumerate(description):
-#                 # Condition is set to display only 200 characters
-#                 if index >= 200:
-#                     description_ += '...(see complete in visualization)'
-#                     break
-#                 # Condition is set to add new line after every 50 characters
-#                 elif not (index+1) % 50:
-#                     description_ += '\n'
-#                 description_ += char
-#         else:
-#             description_ = 'Not available...'
-
-#         # Variable tooltip to hold string for tooltip
-#         tooltip = f'Description:\n{description_}'
-
-#         # Acquiring all properties for the given IRI
-#         all_properties = __accquire_properties__(
-#             iri=key, username=username, password=password)
-#         # Extracting datatype properties
-#         dtype_props = all_properties.get('DatatypeProperty', '')
-#         # Resolving datatype properties string
-#         shown_count = 0
-#         if dtype_props:
-#             datatype_properties_ = ''
-#             for count, (_prop_, _instance_) in enumerate(dtype_props.items()):
-#                 datatype_property_nodes.update({_prop_: {
-#                                                 'n_id': randint(0, 1000),
-#                                                 'pn_id': value.get('n_id'),
-#                                                 'edge': _instance_
-#                                                 }
-#                                                 })
-
-#                 if count < 3:
-#                     datatype_properties_ += f'• {_prop_}\n'
-#                     shown_count = count+1
-#                 elif count == 3:
-#                     datatype_properties_ += f'(see complete in visualizations)'
-
-#         else:
-#             datatype_properties_ = 'Not available...'
-#         total = len(dtype_props)
-#         datatype_properties_ = f'\n\nDatatype Properties' \
-#                                 f'[{shown_count}/{total}]:' \
-#                                 f'\n{datatype_properties_}'
-
-#         # Extracting object properties
-#         object_props = all_properties.get('ObjectProperty', '')
-#         # Resolving object properties text
-#         shown_count = 0
-#         if object_props:
-#             object_properties_ = ''
-#             for count, (_prop_, _instance_) in enumerate(object_props.items()):
-#                 object_property_nodes.update({_prop_: {
-#                     'n_id': randint(1000, 2000),
-#                     'pn_id': value.get('n_id'),
-#                     'edge': _instance_
-#                 }
-#                 })
-#                 if count < 3:
-#                     object_properties_ += f'• {_prop_}\n'
-#                     shown_count = count+1
-#                 elif count == 3:
-#                     object_properties_ += f'(see complete in visualizations)'
-
-#         else:
-#             object_properties_ = 'Not available...'
-#         total = len(object_props)
-#         object_properties_ = f'\nObject Properties [{shown_count}/{total}]:'\
-#                               f'\n{object_properties_}'
-#         # Adding properties to tooltip if verbose is set
-#         if verbose:
-#             tooltip += datatype_properties_
-#             tooltip += object_properties_
-#         # Color selection based of class characteristics
-#         if value.get('hasSubclasses'):
-#             color = '#ABEBC6'
-#         else:
-#             color = '#ACF'
-#         # Width selection for quried classes
-#         if value.get('Class Label') in labels:
-#             borderWidth = 3
-#             borderWidthSelected = 3
-#         else:
-#             borderWidth = 1
-#             borderWidthSelected = 2
-#         # Adding nodes to the Network object
-#         network.add_node(n_id=value.get('n_id'),
-#                          label=value.get('Class Label'),
-#                          borderWidthSelected=borderWidthSelected,
-#                          borderWidth=borderWidth,
-#                          title=tooltip,
-#                          color=color,
-#                          shape='dot',
-#                          size=40)
-
-#     # Adding edges to the network
-#     for key, value in nodes.items():
-#         parent = value.get('Superclass IRIs', None)
-#         if parent:
-#             _to = value.get('n_id', None)
-#             _from = nodes.get(parent, {}).get('n_id', None)
-#             if _to and _from:
-#                 network.add_edge(source=_to, to=_from,
-#                                  arrowStrikethrough=False, color='#AEB6BF')
-
-#     # Adding properties to the Network object if show_properties is set
-#     if show_properties:
-#         network.set_edge_smooth('cubicBezier')
-#         network.repulsion(node_distance=500, spring_length=400)
-#         # Addind datatype properties to the Network object
-#         for key, value in datatype_property_nodes.items():
-#             n_id = value.get('n_id')
-#             network.add_node(n_id=n_id,
-#                              label=value.get('edge'),
-#                              borderWidthSelected=1,
-#                              borderWidth=1,
-#                              color='#FC3',
-#                              shape='box',
-#                              size=40,
-#                              x=-700,
-#                              y=-600)
-#             _from = value.get('pn_id')
-#             network.add_edge(source=_from, to=n_id, arrowStrikethrough=False,
-#                              color='#000', width=1, label=key)
-#         # Addind object properties to the Network object
-#         for key, value in object_property_nodes.items():
-#             n_id = value.get('n_id')
-#             network.add_node(n_id=n_id,
-#                              label=value.get('edge'),
-#                              borderWidthSelected=1,
-#                              borderWidth=1,
-#                              color='#ACf',
-#                              shape='dot',
-#                              size=40,
-#                              x=-700,
-#                              y=-600)
-#             _from = value.get('pn_id')
-#             network.add_edge(source=_from,
-#                              to=n_id,
-#                              arrowStrikethrough=False,
-#                              color='#000',
-#                              width=1,
-#                              label=key)
-#     # Displaying legend
-#     if show_legend & show_properties:
-#         network.add_node(n_id=-1,
-#                          label=' ',
-#                          shape='image',
-#                          image=FULL_LEGEND,
-#                          size=100,
-#                          x=-1000,
-#                          y=-500,
-#                          fixed=True)
-#     else:
-#         network.add_node(n_id=-1,
-#                          label=' ',
-#                          shape='image',
-#                          image=SHORT_LEGEND,
-#                          size=100,
-#                          x=-700,
-#                          y=-200,
-#                          fixed=True)
-#     # Return the network object holding all the nodes and edges
-#     return network
-
-
 def visualize(username,
               password,
+              tenant,
               source_df,
               iris,
               title='Network Graph',
@@ -857,7 +624,7 @@ def visualize(username,
 
     # Acquiring descriptions for all classes
     descriptions = __accquire_description__(
-        username=username, password=password)
+        username=username, password=password, tenant=tenant)
 
     # Forming a dictionaries out of involved classes and properties
     nodes = {}
@@ -894,7 +661,8 @@ def visualize(username,
 
             all_properties = __accquire_properties__(iri=iri,
                                                      username=username,
-                                                     password=password)
+                                                     password=password,
+                                                     tenant=tenant)
             # Adding properties to tooltip
             if verbose:
                 node.update({'tooltip': node.get('tooltip') +
@@ -930,7 +698,8 @@ def visualize(username,
                             if verbose:
                                 all_properties = __accquire_properties__(iri=range_,
                                                                          username=username,
-                                                                         password=password)
+                                                                         password=password,
+                                                                         tenant=tenant)
                                 node.update({'tooltip': node.get(
                                     'tooltip')+format_properties(all_properties)})
                         else:
