@@ -47,8 +47,14 @@ To install the hybrid version we will go to the terminal in the coreplus-demo di
 docker-compose -f .\docker-compose-hybrid.yml up -d
 ```
 
+
 The CDK would be available on the browser at [http://localhost:8888](http://localhost:8888)
 
+Similarly, we can compose it down with the command
+
+```bash
+docker-compose -f .\docker-compose-hybrid.yml down
+```
 
 ## Local Installation
  
@@ -60,6 +66,12 @@ To install the hybrid version we will go to the terminal in the coreplus-demo di
 
 ```bash
 docker-compose -f .\docker-compose-local.yml up -d
+```
+
+Similarly, we can compose it down with the command
+
+```bash
+docker-compose -f .\docker-compose-local.yml down
 ```
 
 The CDK would be available on the browser at [http://localhost:8888](http://localhost:8888)
