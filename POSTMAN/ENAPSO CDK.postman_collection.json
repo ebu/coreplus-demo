@@ -1,0 +1,3907 @@
+{
+	"info": {
+		"_postman_id": "24ec772d-24d3-44e5-947d-848c346d451f",
+		"name": "ENAPSO CDK",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "7183002"
+	},
+	"item": [
+		{
+			"name": "Login Keycloak",
+			"item": [
+				{
+					"name": "User Login",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);\r",
+									"pm.environment.set(\"token\", jsonData[\"access_token\"]);\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "password",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "enapso-sdk",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "{{user}}",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "{{password}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{loginURL}}/auth/realms/{{tenantId}}/protocol/openid-connect/token",
+							"host": [
+								"{{loginURL}}"
+							],
+							"path": [
+								"auth",
+								"realms",
+								"{{tenantId}}",
+								"protocol",
+								"openid-connect",
+								"token"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"if(pm.environment.get(\"ngnix\") == \"false\"){",
+							"pm.collectionVariables.set(\"loginURL\", pm.environment.get(\"url\")+\":8080\");",
+							"",
+							"}else{",
+							"    pm.collectionVariables.set(\"loginURL\", pm.environment.get(\"url\"));",
+							"",
+							"}",
+							"",
+							"",
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "GraphDB Management Service",
+			"item": [
+				{
+					"name": "Delete Context",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-enapso-auth",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"context\": \"http://www.ebu.ch/metadata/ontologies/ebucore/demo/data\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}{{namespace}}/v1/delete-context",
+							"host": [
+								"{{url}}{{namespace}}"
+							],
+							"path": [
+								"v1",
+								"delete-context"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Clear Database",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-enapso-auth",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}{{namespace}}/v1/clear-database",
+							"host": [
+								"{{url}}{{namespace}}"
+							],
+							"path": [
+								"v1",
+								"clear-database"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Upload Ontology From File",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-enapso-auth",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "fileName",
+									"type": "file",
+									"src": []
+								},
+								{
+									"key": "format",
+									"value": "text/turtle",
+									"type": "text"
+								},
+								{
+									"key": "context",
+									"value": "http://www.ebu.ch/metadata/ontologies/ebucore",
+									"type": "text"
+								},
+								{
+									"key": "baseIRI",
+									"value": "http://www.ebu.ch/metadata/ontologies/ebucore#",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}{{namespace}}/v1/upload-ontology-from-file",
+							"host": [
+								"{{url}}{{namespace}}"
+							],
+							"path": [
+								"v1",
+								"upload-ontology-from-file"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Import Data Via RML",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-enapso-auth",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "demoData",
+									"type": "file",
+									"src": []
+								},
+								{
+									"key": "RMLFile",
+									"type": "file",
+									"src": []
+								},
+								{
+									"key": "context",
+									"value": "http://www.ebu.ch/metadata/ontologies/ebucore/demo/data",
+									"type": "text"
+								},
+								{
+									"key": "clearTargetGraph",
+									"value": "true",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}{{namespace}}/v1/import-data-via-rml",
+							"host": [
+								"{{url}}{{namespace}}"
+							],
+							"path": [
+								"v1",
+								"import-data-via-rml"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Replace Ontology From File",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-enapso-auth",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "fileName",
+									"type": "file",
+									"src": "EnapsoSoftware.ttl"
+								},
+								{
+									"key": "format",
+									"value": "text/turtle",
+									"type": "text"
+								},
+								{
+									"key": "context",
+									"value": "http://www.ebu.ch/metadata/ontologies/ebucore",
+									"type": "text"
+								},
+								{
+									"key": "baseIRI",
+									"value": "http://www.ebu.ch/metadata/ontologies/ebucore#",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}{{namespace}}/v1/replace-ontology-from-file",
+							"host": [
+								"{{url}}{{namespace}}"
+							],
+							"path": [
+								"v1",
+								"replace-ontology-from-file"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Download Ontology",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-enapso-auth",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"context\": \"http://ont.enapso.com/truck\",\r\n  \"format\": \"application/rdf+xml\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}{{namespace}}/v1/download-ontology",
+							"host": [
+								"{{url}}{{namespace}}"
+							],
+							"path": [
+								"v1",
+								"download-ontology"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Upload Ontology From Data",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-enapso-auth",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"fileData\": \"@prefix : <http:\\/\\/ont.enapso.com\\/truck#> .\\r\\n@prefix enh: <http:\\/\\/ont.enapso.com\\/truck#> .\\r\\n@prefix owl: <http:\\/\\/www.w3.org\\/2002\\/07\\/owl#> .\\r\\n@prefix rdf: <http:\\/\\/www.w3.org\\/1999\\/02\\/22-rdf-syntax-ns#> .\\r\\n@prefix xml: <http:\\/\\/www.w3.org\\/XML\\/1998\\/namespace> .\\r\\n@prefix xsd: <http:\\/\\/www.w3.org\\/2001\\/XMLSchema#> .\\r\\n@prefix rdfs: <http:\\/\\/www.w3.org\\/2000\\/01\\/rdf-schema#> .\\r\\n@prefix 1.0.0: <http:\\/\\/ont.enapso.com\\/truck\\/1.0.0#> .\\r\\n@prefix terms: <http:\\/\\/purl.org\\/dc\\/terms\\/> .\\r\\n@prefix schema: <https:\\/\\/schema.org\\/> .\\r\\n@base <http:\\/\\/ont.enapso.com\\/truck> .\\r\\n\\r\\n<http:\\/\\/ont.enapso.com\\/truck> rdf:type owl:Ontology ;\\r\\n                               owl:versionIRI <http:\\/\\/ont.enapso.com\\/truck\\/1.0.0> ;\\r\\n                               rdfs:comment \\\"ENAPSO Haigo Transportation Ontology\\\"@en .\\r\\n\\r\\n#################################################################\\r\\n#    Object Properties\\r\\n#################################################################\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#haCurrentLocation\\r\\nenh:haCurrentLocation rdf:type owl:ObjectProperty ;\\r\\n                      rdfs:label \\\"has Current Location\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#hasEndPoint\\r\\nenh:hasEndPoint rdf:type owl:ObjectProperty ;\\r\\n                rdfs:label \\\"has End Point\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#hasLoadingService\\r\\nenh:hasLoadingService rdf:type owl:ObjectProperty ;\\r\\n                      rdfs:label \\\"has Loading Service\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#hasMap\\r\\nenh:hasMap rdf:type owl:ObjectProperty ;\\r\\n           rdfs:label \\\"has Map\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#hasOrder\\r\\nenh:hasOrder rdf:type owl:ObjectProperty ;\\r\\n             rdfs:label \\\"has Order\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#hasOwner\\r\\nenh:hasOwner rdf:type owl:ObjectProperty ;\\r\\n             rdfs:label \\\"has Owner\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#hasRate\\r\\nenh:hasRate rdf:type owl:ObjectProperty ;\\r\\n            rdfs:label \\\"has Rate\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#hasRoutes\\r\\nenh:hasRoutes rdf:type owl:ObjectProperty ;\\r\\n              rdfs:label \\\"has Routes\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#hasStartPoint\\r\\nenh:hasStartPoint rdf:type owl:ObjectProperty ;\\r\\n                  rdfs:label \\\"has Start Point\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#hasTruck\\r\\nenh:hasTruck rdf:type owl:ObjectProperty ;\\r\\n             rdfs:label \\\"has Truck\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#hasUnLoadingService\\r\\nenh:hasUnLoadingService rdf:type owl:ObjectProperty ;\\r\\n                        rdfs:label \\\"has Un Loading Service\\\"@en .\\r\\n\\r\\n\\r\\n#################################################################\\r\\n#    Data properties\\r\\n#################################################################\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#DeliveryType\\r\\nenh:DeliveryType rdf:type owl:DatatypeProperty ;\\r\\n                 rdfs:label \\\"delivery Type\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#address\\r\\nenh:address rdf:type owl:DatatypeProperty ;\\r\\n            rdfs:label \\\"address\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#averageFuelConsumption\\r\\nenh:averageFuelConsumption rdf:type owl:DatatypeProperty ;\\r\\n                           rdfs:label \\\"average Fuel Consumption\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#averageSpeed\\r\\nenh:averageSpeed rdf:type owl:DatatypeProperty ;\\r\\n                 rdfs:label \\\"average Speed\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#cargoVolume\\r\\nenh:cargoVolume rdf:type owl:DatatypeProperty ;\\r\\n                rdfs:label \\\"cargo Volume\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#chassisNumber\\r\\nenh:chassisNumber rdf:type owl:DatatypeProperty ;\\r\\n                  rdfs:label \\\"chassis Number\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#costPerHour\\r\\nenh:costPerHour rdf:type owl:DatatypeProperty ;\\r\\n                rdfs:label \\\"cost Per Hour\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#costPerkm\\r\\nenh:costPerkm rdf:type owl:DatatypeProperty ;\\r\\n              rdfs:label \\\"cost Per km\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#deliveryAddress\\r\\nenh:deliveryAddress rdf:type owl:DatatypeProperty ;\\r\\n                    rdfs:label \\\"delivery Address\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#deliveryDistance\\r\\nenh:deliveryDistance rdf:type owl:DatatypeProperty ;\\r\\n                     rdfs:label \\\"delivery Distance\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#driveConfiguration\\r\\nenh:driveConfiguration rdf:type owl:DatatypeProperty ;\\r\\n                       rdfs:label \\\"drive Configuration\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#expectedDeliveryDate\\r\\nenh:expectedDeliveryDate rdf:type owl:DatatypeProperty ;\\r\\n                         rdfs:label \\\"expected Delivery Date\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#licenceNumber\\r\\nenh:licenceNumber rdf:type owl:DatatypeProperty ;\\r\\n                  rdfs:label \\\"licence Number\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#loadCapacity\\r\\nenh:loadCapacity rdf:type owl:DatatypeProperty ;\\r\\n                 rdfs:label \\\"load Capacity\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#loadingCost\\r\\nenh:loadingCost rdf:type owl:DatatypeProperty ;\\r\\n                rdfs:label \\\"loading Cost\\\" .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#loadingTime\\r\\nenh:loadingTime rdf:type owl:DatatypeProperty ;\\r\\n                rdfs:label \\\"loading Time\\\" .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#make\\r\\nenh:make rdf:type owl:DatatypeProperty ;\\r\\n         rdfs:label \\\"make\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#maximumSpeed\\r\\nenh:maximumSpeed rdf:type owl:DatatypeProperty ;\\r\\n                 rdfs:label \\\"maximum Speed\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#mileageReadDate\\r\\nenh:mileageReadDate rdf:type owl:DatatypeProperty ;\\r\\n                    rdfs:label \\\"mileage Read Date\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#model\\r\\nenh:model rdf:type owl:DatatypeProperty ;\\r\\n          rdfs:label \\\"model\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#name\\r\\nenh:name rdf:type owl:DatatypeProperty ;\\r\\n         rdfs:label \\\"name\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#noOfSeats\\r\\nenh:noOfSeats rdf:type owl:DatatypeProperty ;\\r\\n              rdfs:label \\\"no of seats\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#orderId\\r\\nenh:orderId rdf:type owl:DatatypeProperty ;\\r\\n            rdfs:label \\\"order Id\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#orderdate\\r\\nenh:orderdate rdf:type owl:DatatypeProperty ;\\r\\n              rdfs:label \\\"order Date\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#power\\r\\nenh:power rdf:type owl:DatatypeProperty ;\\r\\n          rdfs:label \\\"power\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#ratePerVolume\\r\\nenh:ratePerVolume rdf:type owl:DatatypeProperty ;\\r\\n                  rdfs:label \\\"rate Per Volume\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#status\\r\\nenh:status rdf:type owl:DatatypeProperty ;\\r\\n           rdfs:label \\\"status\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#time\\r\\nenh:time rdf:type owl:DatatypeProperty ;\\r\\n         rdfs:label \\\"time\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#totalMileage\\r\\nenh:totalMileage rdf:type owl:DatatypeProperty ;\\r\\n                 rdfs:label \\\"total Mileage\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#transportCharges\\r\\nenh:transportCharges rdf:type owl:DatatypeProperty ;\\r\\n                     rdfs:label \\\"transport Charges\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#truckColor\\r\\nenh:truckColor rdf:type owl:DatatypeProperty .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#truckNumber\\r\\nenh:truckNumber rdf:type owl:DatatypeProperty ;\\r\\n                rdfs:label \\\"truck Number\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#unLoadingCost\\r\\nenh:unLoadingCost rdf:type owl:DatatypeProperty ;\\r\\n                  rdfs:label \\\"un Loading Cost\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#unLoadingTime\\r\\nenh:unLoadingTime rdf:type owl:DatatypeProperty ;\\r\\n                  rdfs:label \\\"un Loading Time\\\"@en .\\r\\n\\r\\n\\r\\n#################################################################\\r\\n#    Classes\\r\\n#################################################################\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#DeliveryPlan\\r\\nenh:DeliveryPlan rdf:type owl:Class ;\\r\\n                 rdfs:subClassOf [ rdf:type owl:Restriction ;\\r\\n                                   owl:onProperty enh:hasOrder ;\\r\\n                                   owl:allValuesFrom enh:Order\\r\\n                                 ] ,\\r\\n                                 [ rdf:type owl:Restriction ;\\r\\n                                   owl:onProperty enh:hasTruck ;\\r\\n                                   owl:qualifiedCardinality \\\"1\\\"^^xsd:nonNegativeInteger ;\\r\\n                                   owl:onClass enh:Truck\\r\\n                                 ] ,\\r\\n                                 [ rdf:type owl:Restriction ;\\r\\n                                   owl:onProperty enh:status ;\\r\\n                                   owl:qualifiedCardinality \\\"1\\\"^^xsd:nonNegativeInteger ;\\r\\n                                   owl:onDataRange xsd:string\\r\\n                                 ] ;\\r\\n                 rdfs:comment \\\"Delivery plan means how a order deliver through which truck and using which route through map\\\"@en ;\\r\\n                 rdfs:label \\\"Delivery Plan\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#GeoLocation\\r\\nenh:GeoLocation rdf:type owl:Class ;\\r\\n                rdfs:subClassOf enh:Location ;\\r\\n                rdfs:comment \\\"Gro Location is a technique of identifying the geographical location of a person or device by means of digital information processed via the internet.\\\"@en ;\\r\\n                rdfs:label \\\"Geo Location\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#Location\\r\\nenh:Location rdf:type owl:Class ;\\r\\n             rdfs:subClassOf [ rdf:type owl:Restriction ;\\r\\n                               owl:onProperty enh:address ;\\r\\n                               owl:qualifiedCardinality \\\"1\\\"^^xsd:nonNegativeInteger ;\\r\\n                               owl:onDataRange xsd:string\\r\\n                             ] ;\\r\\n             rdfs:comment \\\"Location is a particular place or position.\\\"@en ;\\r\\n             rdfs:label \\\"Location\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#Map\\r\\nenh:Map rdf:type owl:Class ;\\r\\n        rdfs:subClassOf [ rdf:type owl:Restriction ;\\r\\n                          owl:onProperty enh:hasRoutes ;\\r\\n                          owl:allValuesFrom enh:Route\\r\\n                        ] ;\\r\\n        rdfs:label \\\"Map\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#Order\\r\\nenh:Order rdf:type owl:Class ;\\r\\n          rdfs:subClassOf [ rdf:type owl:Restriction ;\\r\\n                            owl:onProperty enh:hasRate ;\\r\\n                            owl:qualifiedCardinality \\\"1\\\"^^xsd:nonNegativeInteger ;\\r\\n                            owl:onClass enh:Rate\\r\\n                          ] ,\\r\\n                          [ rdf:type owl:Restriction ;\\r\\n                            owl:onProperty enh:hasRoutes ;\\r\\n                            owl:qualifiedCardinality \\\"1\\\"^^xsd:nonNegativeInteger ;\\r\\n                            owl:onClass enh:Route\\r\\n                          ] ,\\r\\n                          [ rdf:type owl:Restriction ;\\r\\n                            owl:onProperty enh:unLoadingTime ;\\r\\n                            owl:someValuesFrom xsd:string\\r\\n                          ] ,\\r\\n                          [ rdf:type owl:Restriction ;\\r\\n                            owl:onProperty enh:cargoVolume ;\\r\\n                            owl:qualifiedCardinality \\\"1\\\"^^xsd:nonNegativeInteger ;\\r\\n                            owl:onDataRange xsd:string\\r\\n                          ] ,\\r\\n                          [ rdf:type owl:Restriction ;\\r\\n                            owl:onProperty enh:deliveryAddress ;\\r\\n                            owl:qualifiedCardinality \\\"1\\\"^^xsd:nonNegativeInteger ;\\r\\n                            owl:onDataRange xsd:string\\r\\n                          ] ,\\r\\n                          [ rdf:type owl:Restriction ;\\r\\n                            owl:onProperty enh:expectedDeliveryDate ;\\r\\n                            owl:qualifiedCardinality \\\"1\\\"^^xsd:nonNegativeInteger ;\\r\\n                            owl:onDataRange xsd:string\\r\\n                          ] ,\\r\\n                          [ rdf:type owl:Restriction ;\\r\\n                            owl:onProperty enh:orderId ;\\r\\n                            owl:qualifiedCardinality \\\"1\\\"^^xsd:nonNegativeInteger ;\\r\\n                            owl:onDataRange xsd:string\\r\\n                          ] ,\\r\\n                          [ rdf:type owl:Restriction ;\\r\\n                            owl:onProperty enh:orderdate ;\\r\\n                            owl:qualifiedCardinality \\\"1\\\"^^xsd:nonNegativeInteger ;\\r\\n                            owl:onDataRange xsd:string\\r\\n                          ] ,\\r\\n                          [ rdf:type owl:Restriction ;\\r\\n                            owl:onProperty enh:status ;\\r\\n                            owl:qualifiedCardinality \\\"1\\\"^^xsd:nonNegativeInteger ;\\r\\n                            owl:onDataRange xsd:string\\r\\n                          ] ,\\r\\n                          [ rdf:type owl:Restriction ;\\r\\n                            owl:onProperty enh:transportCharges ;\\r\\n                            owl:qualifiedCardinality \\\"1\\\"^^xsd:nonNegativeInteger ;\\r\\n                            owl:onDataRange xsd:string\\r\\n                          ] ,\\r\\n                          [ rdf:type owl:Restriction ;\\r\\n                            owl:onProperty enh:loadingCost ;\\r\\n                            owl:maxQualifiedCardinality \\\"1\\\"^^xsd:nonNegativeInteger ;\\r\\n                            owl:onDataRange xsd:string\\r\\n                          ] ,\\r\\n                          [ rdf:type owl:Restriction ;\\r\\n                            owl:onProperty enh:loadingTime ;\\r\\n                            owl:maxQualifiedCardinality \\\"1\\\"^^xsd:nonNegativeInteger ;\\r\\n                            owl:onDataRange xsd:string\\r\\n                          ] ;\\r\\n          rdfs:label \\\"Order\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#Rate\\r\\nenh:Rate rdf:type owl:Class ;\\r\\n         rdfs:subClassOf [ rdf:type owl:Restriction ;\\r\\n                           owl:onProperty enh:hasOwner ;\\r\\n                           owl:qualifiedCardinality \\\"1\\\"^^xsd:nonNegativeInteger ;\\r\\n                           owl:onClass enh:TransportCompany\\r\\n                         ] ,\\r\\n                         [ rdf:type owl:Restriction ;\\r\\n                           owl:onProperty enh:DeliveryType ;\\r\\n                           owl:qualifiedCardinality \\\"1\\\"^^xsd:nonNegativeInteger ;\\r\\n                           owl:onDataRange xsd:string\\r\\n                         ] ,\\r\\n                         [ rdf:type owl:Restriction ;\\r\\n                           owl:onProperty enh:ratePerVolume ;\\r\\n                           owl:qualifiedCardinality \\\"1\\\"^^xsd:nonNegativeInteger ;\\r\\n                           owl:onDataRange xsd:string\\r\\n                         ] ;\\r\\n         rdfs:comment \\\"A rate calculator is the ratio between two related quantities in different units.\\\"@en ;\\r\\n         rdfs:label \\\"Rate\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#Route\\r\\nenh:Route rdf:type owl:Class ;\\r\\n          rdfs:subClassOf [ rdf:type owl:Restriction ;\\r\\n                            owl:onProperty enh:hasEndPoint ;\\r\\n                            owl:qualifiedCardinality \\\"1\\\"^^xsd:nonNegativeInteger ;\\r\\n                            owl:onClass enh:Location\\r\\n                          ] ,\\r\\n                          [ rdf:type owl:Restriction ;\\r\\n                            owl:onProperty enh:hasStartPoint ;\\r\\n                            owl:qualifiedCardinality \\\"1\\\"^^xsd:nonNegativeInteger ;\\r\\n                            owl:onClass enh:Location\\r\\n                          ] ,\\r\\n                          [ rdf:type owl:Restriction ;\\r\\n                            owl:onProperty enh:deliveryDistance ;\\r\\n                            owl:qualifiedCardinality \\\"1\\\"^^xsd:nonNegativeInteger ;\\r\\n                            owl:onDataRange xsd:integer\\r\\n                          ] ;\\r\\n          rdfs:comment \\\"A transportation route is the regular path that is followed by a movement of people or goods.\\\"@en ;\\r\\n          rdfs:label \\\"Route\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#StreetLocation\\r\\nenh:StreetLocation rdf:type owl:Class ;\\r\\n                   rdfs:subClassOf enh:Location ;\\r\\n                   rdfs:comment \\\"Street Location is a location that primarily displays roads and transport links.\\\"@en ;\\r\\n                   rdfs:label \\\"Street Location\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#TransportCompany\\r\\nenh:TransportCompany rdf:type owl:Class ;\\r\\n                     rdfs:subClassOf [ rdf:type owl:Restriction ;\\r\\n                                       owl:onProperty enh:address ;\\r\\n                                       owl:qualifiedCardinality \\\"1\\\"^^xsd:nonNegativeInteger ;\\r\\n                                       owl:onDataRange xsd:string\\r\\n                                     ] ,\\r\\n                                     [ rdf:type owl:Restriction ;\\r\\n                                       owl:onProperty enh:name ;\\r\\n                                       owl:qualifiedCardinality \\\"1\\\"^^xsd:nonNegativeInteger ;\\r\\n                                       owl:onDataRange xsd:string\\r\\n                                     ] ;\\r\\n                     rdfs:comment \\\"A transportation company is a business that transports freight from one location to another which is a key in the value chain in manufacturing\\\"@en ;\\r\\n                     rdfs:label \\\"Transport Company\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#Truck\\r\\nenh:Truck rdf:type owl:Class ;\\r\\n          rdfs:subClassOf [ rdf:type owl:Restriction ;\\r\\n                            owl:onProperty enh:hasOwner ;\\r\\n                            owl:qualifiedCardinality \\\"1\\\"^^xsd:nonNegativeInteger ;\\r\\n                            owl:onClass enh:TransportCompany\\r\\n                          ] ,\\r\\n                          [ rdf:type owl:Restriction ;\\r\\n                            owl:onProperty enh:haCurrentLocation ;\\r\\n                            owl:maxQualifiedCardinality \\\"1\\\"^^xsd:nonNegativeInteger ;\\r\\n                            owl:onClass enh:Location\\r\\n                          ] ,\\r\\n                          [ rdf:type owl:Restriction ;\\r\\n                            owl:onProperty enh:averageSpeed ;\\r\\n                            owl:qualifiedCardinality \\\"1\\\"^^xsd:nonNegativeInteger ;\\r\\n                            owl:onDataRange xsd:integer\\r\\n                          ] ,\\r\\n                          [ rdf:type owl:Restriction ;\\r\\n                            owl:onProperty enh:chassisNumber ;\\r\\n                            owl:qualifiedCardinality \\\"1\\\"^^xsd:nonNegativeInteger ;\\r\\n                            owl:onDataRange xsd:string\\r\\n                          ] ,\\r\\n                          [ rdf:type owl:Restriction ;\\r\\n                            owl:onProperty enh:costPerHour ;\\r\\n                            owl:qualifiedCardinality \\\"1\\\"^^xsd:nonNegativeInteger ;\\r\\n                            owl:onDataRange xsd:decimal\\r\\n                          ] ,\\r\\n                          [ rdf:type owl:Restriction ;\\r\\n                            owl:onProperty enh:costPerkm ;\\r\\n                            owl:qualifiedCardinality \\\"1\\\"^^xsd:nonNegativeInteger ;\\r\\n                            owl:onDataRange xsd:decimal\\r\\n                          ] ,\\r\\n                          [ rdf:type owl:Restriction ;\\r\\n                            owl:onProperty enh:driveConfiguration ;\\r\\n                            owl:qualifiedCardinality \\\"1\\\"^^xsd:nonNegativeInteger ;\\r\\n                            owl:onDataRange xsd:string\\r\\n                          ] ,\\r\\n                          [ rdf:type owl:Restriction ;\\r\\n                            owl:onProperty enh:licenceNumber ;\\r\\n                            owl:qualifiedCardinality \\\"1\\\"^^xsd:nonNegativeInteger ;\\r\\n                            owl:onDataRange xsd:string\\r\\n                          ] ,\\r\\n                          [ rdf:type owl:Restriction ;\\r\\n                            owl:onProperty enh:loadCapacity ;\\r\\n                            owl:qualifiedCardinality \\\"1\\\"^^xsd:nonNegativeInteger ;\\r\\n                            owl:onDataRange xsd:decimal\\r\\n                          ] ,\\r\\n                          [ rdf:type owl:Restriction ;\\r\\n                            owl:onProperty enh:model ;\\r\\n                            owl:qualifiedCardinality \\\"1\\\"^^xsd:nonNegativeInteger ;\\r\\n                            owl:onDataRange xsd:string\\r\\n                          ] ,\\r\\n                          [ rdf:type owl:Restriction ;\\r\\n                            owl:onProperty enh:power ;\\r\\n                            owl:qualifiedCardinality \\\"1\\\"^^xsd:nonNegativeInteger ;\\r\\n                            owl:onDataRange xsd:integer\\r\\n                          ] ,\\r\\n                          [ rdf:type owl:Restriction ;\\r\\n                            owl:onProperty enh:truckNumber ;\\r\\n                            owl:qualifiedCardinality \\\"1\\\"^^xsd:nonNegativeInteger ;\\r\\n                            owl:onDataRange xsd:string\\r\\n                          ] ,\\r\\n                          [ rdf:type owl:Restriction ;\\r\\n                            owl:onProperty enh:averageFuelConsumption ;\\r\\n                            owl:maxQualifiedCardinality \\\"1\\\"^^xsd:nonNegativeInteger ;\\r\\n                            owl:onDataRange xsd:decimal\\r\\n                          ] ,\\r\\n                          [ rdf:type owl:Restriction ;\\r\\n                            owl:onProperty enh:make ;\\r\\n                            owl:maxQualifiedCardinality \\\"1\\\"^^xsd:nonNegativeInteger ;\\r\\n                            owl:onDataRange xsd:string\\r\\n                          ] ,\\r\\n                          [ rdf:type owl:Restriction ;\\r\\n                            owl:onProperty enh:maximumSpeed ;\\r\\n                            owl:maxQualifiedCardinality \\\"1\\\"^^xsd:nonNegativeInteger ;\\r\\n                            owl:onDataRange xsd:integer\\r\\n                          ] ,\\r\\n                          [ rdf:type owl:Restriction ;\\r\\n                            owl:onProperty enh:totalMileage ;\\r\\n                            owl:maxQualifiedCardinality \\\"1\\\"^^xsd:nonNegativeInteger ;\\r\\n                            owl:onDataRange xsd:string\\r\\n                          ] ;\\r\\n          rdfs:comment \\\"A truck is a motor vehicle designed to transport cargo. Trucks vary greatly in size, power, and configuration.\\\"@en ;\\r\\n          rdfs:label \\\"Truck\\\"@en .\\r\\n\\r\\n\\r\\n#################################################################\\r\\n#    Individuals\\r\\n#################################################################\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#DeliveryPlaneb63ee72_a078_4864_bc23_9577da504c9c\\r\\nenh:DeliveryPlaneb63ee72_a078_4864_bc23_9577da504c9c rdf:type owl:NamedIndividual ,\\r\\n                                                              enh:DeliveryPlan ;\\r\\n                                                     enh:hasOrder enh:Ordercf913614_a727_4dc0_99b5_bf99eacdf5bb ;\\r\\n                                                     enh:hasTruck enh:Truck025d8a60_50fe_41ce_abd2_1acda942b83a ;\\r\\n                                                     enh:status \\\"Delivered\\\"^^xsd:string ;\\r\\n                                                     rdfs:label \\\"Order 1 DeliveryPlan\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#Location1dccb805_064f_490f_9392_64f3331673d8\\r\\nenh:Location1dccb805_064f_490f_9392_64f3331673d8 rdf:type owl:NamedIndividual ,\\r\\n                                                          enh:Location ;\\r\\n                                                 enh:address \\\"Bremen\\\"^^xsd:string ;\\r\\n                                                 rdfs:label \\\"Bremen\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#Location2fe7aebd_7b01_4f01_baa1_0482ebf09812\\r\\nenh:Location2fe7aebd_7b01_4f01_baa1_0482ebf09812 rdf:type owl:NamedIndividual ,\\r\\n                                                          enh:Location ;\\r\\n                                                 enh:address \\\"Cologne\\\"^^xsd:string ;\\r\\n                                                 rdfs:label \\\"Cologne\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#Location3539b55d_2a6b_47f5_b35b_57267ce0f1cc\\r\\nenh:Location3539b55d_2a6b_47f5_b35b_57267ce0f1cc rdf:type owl:NamedIndividual ,\\r\\n                                                          enh:Location ;\\r\\n                                                 enh:address \\\"Hamburg\\\"^^xsd:string ;\\r\\n                                                 rdfs:label \\\"Hamburg\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#Locationa17eec90_cd8d_45ec_9054_b81bdefa6169\\r\\nenh:Locationa17eec90_cd8d_45ec_9054_b81bdefa6169 rdf:type owl:NamedIndividual ,\\r\\n                                                          enh:Location ;\\r\\n                                                 enh:address \\\"Munich\\\"^^xsd:string ;\\r\\n                                                 rdfs:label \\\"Munich\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#Locationa8a0aed7_7a82_48f5_98d9_c281b50d1916\\r\\nenh:Locationa8a0aed7_7a82_48f5_98d9_c281b50d1916 rdf:type owl:NamedIndividual ,\\r\\n                                                          enh:Location ;\\r\\n                                                 enh:address \\\"Berlin\\\"^^xsd:string ;\\r\\n                                                 rdfs:label \\\"Berlin\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#Mapb755fa6e_9f8a_4f2b_92d2_699e185ba601\\r\\nenh:Mapb755fa6e_9f8a_4f2b_92d2_699e185ba601 rdf:type owl:NamedIndividual ,\\r\\n                                                     enh:Map ;\\r\\n                                            enh:hasRoutes enh:Routeb9050b1b_12e4_41c7_91b6_fbde92d954f3 ,\\r\\n                                                          enh:Routec6c73b57_9756_45dc_a28f_2ee2a99fdc98 ,\\r\\n                                                          enh:Routef195f1f3_6fae_4263_a1d5_300493896a58 ;\\r\\n                                            rdfs:label \\\"Map\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#Ordercf913614_a727_4dc0_99b5_bf99eacdf5bb\\r\\nenh:Ordercf913614_a727_4dc0_99b5_bf99eacdf5bb rdf:type owl:NamedIndividual ,\\r\\n                                                       enh:Order ;\\r\\n                                              enh:hasRate enh:RateCalculator9738c1c3_3d68_478e_a195_f398c53af784 ;\\r\\n                                              enh:hasRoutes enh:Routec6c73b57_9756_45dc_a28f_2ee2a99fdc98 ;\\r\\n                                              enh:cargoVolume 40.2 ;\\r\\n                                              enh:deliveryAddress \\\"Fasanenstr. 57, 22763 Hamburg, Germany\\\"^^xsd:string ;\\r\\n                                              enh:expectedDeliveryDate \\\"2021-06-08\\\"^^xsd:string ;\\r\\n                                              enh:loadingCost 150.12 ;\\r\\n                                              enh:loadingTime 2 ;\\r\\n                                              enh:orderId \\\"3794213\\\"^^xsd:string ;\\r\\n                                              enh:orderdate \\\"2021-06-04\\\"^^xsd:string ;\\r\\n                                              enh:transportCharges 1520.33 ;\\r\\n                                              enh:unLoadingCost 90.12 ;\\r\\n                                              enh:unLoadingTime 2 ;\\r\\n                                              rdfs:label \\\"Order1\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#RateCalculator142bc4a2_5c50_441c_b3db_b2e5985ae0a8\\r\\nenh:RateCalculator142bc4a2_5c50_441c_b3db_b2e5985ae0a8 rdf:type owl:NamedIndividual ,\\r\\n                                                                enh:Rate ;\\r\\n                                                       enh:hasOwner enh:TransportationCompany5cfb2f42_500e_4856_9acb_80901669cb7f ;\\r\\n                                                       enh:DeliveryType \\\"Express\\\"^^xsd:string ;\\r\\n                                                       enh:ratePerVolume 50 ;\\r\\n                                                       rdfs:label \\\"Express Rate\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#RateCalculator9738c1c3_3d68_478e_a195_f398c53af784\\r\\nenh:RateCalculator9738c1c3_3d68_478e_a195_f398c53af784 rdf:type owl:NamedIndividual ,\\r\\n                                                                enh:Rate ;\\r\\n                                                       enh:hasOwner enh:TransportationCompany5cfb2f42_500e_4856_9acb_80901669cb7f ;\\r\\n                                                       enh:DeliveryType \\\"Normal\\\"^^xsd:string ;\\r\\n                                                       enh:ratePerVolume 30.00 ;\\r\\n                                                       rdfs:label \\\"Normal Rate\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#Routeb9050b1b_12e4_41c7_91b6_fbde92d954f3\\r\\nenh:Routeb9050b1b_12e4_41c7_91b6_fbde92d954f3 rdf:type owl:NamedIndividual ,\\r\\n                                                       enh:Route ;\\r\\n                                              enh:hasEndPoint enh:Location2fe7aebd_7b01_4f01_baa1_0482ebf09812 ;\\r\\n                                              enh:hasStartPoint enh:Locationa8a0aed7_7a82_48f5_98d9_c281b50d1916 ;\\r\\n                                              enh:deliveryDistance 356 ;\\r\\n                                              rdfs:label \\\"Berlin To Cologne Route\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#Routec6c73b57_9756_45dc_a28f_2ee2a99fdc98\\r\\nenh:Routec6c73b57_9756_45dc_a28f_2ee2a99fdc98 rdf:type owl:NamedIndividual ,\\r\\n                                                       enh:Route ;\\r\\n                                              enh:hasEndPoint enh:Location3539b55d_2a6b_47f5_b35b_57267ce0f1cc ;\\r\\n                                              enh:hasStartPoint enh:Locationa8a0aed7_7a82_48f5_98d9_c281b50d1916 ;\\r\\n                                              enh:deliveryDistance 178 ;\\r\\n                                              rdfs:label \\\"Berlin To Hamburg Route\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#Routef195f1f3_6fae_4263_a1d5_300493896a58\\r\\nenh:Routef195f1f3_6fae_4263_a1d5_300493896a58 rdf:type owl:NamedIndividual ,\\r\\n                                                       enh:Route ;\\r\\n                                              enh:hasEndPoint enh:Locationa17eec90_cd8d_45ec_9054_b81bdefa6169 ;\\r\\n                                              enh:hasStartPoint enh:Locationa8a0aed7_7a82_48f5_98d9_c281b50d1916 ;\\r\\n                                              enh:deliveryDistance 364 ;\\r\\n                                              rdfs:label \\\"Berlin To Munich Route\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#TransportationCompany5cfb2f42_500e_4856_9acb_80901669cb7f\\r\\nenh:TransportationCompany5cfb2f42_500e_4856_9acb_80901669cb7f rdf:type owl:NamedIndividual ,\\r\\n                                                                       enh:TransportCompany ;\\r\\n                                                              enh:address \\\"Shahab Pura Road Sialkot\\\"^^xsd:string ;\\r\\n                                                              enh:name \\\"Haigo Transportation\\\"^^xsd:string ;\\r\\n                                                              rdfs:label \\\"Haigo Transportation\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#Truck025d8a60_50fe_41ce_abd2_1acda942b83a\\r\\nenh:Truck025d8a60_50fe_41ce_abd2_1acda942b83a rdf:type owl:NamedIndividual ,\\r\\n                                                       enh:Truck ;\\r\\n                                              enh:haCurrentLocation enh:Locationa8a0aed7_7a82_48f5_98d9_c281b50d1916 ;\\r\\n                                              enh:hasOwner enh:TransportationCompany5cfb2f42_500e_4856_9acb_80901669cb7f ;\\r\\n                                              enh:averageFuelConsumption 7.2 ;\\r\\n                                              enh:averageSpeed 48 ;\\r\\n                                              enh:chassisNumber \\\"1GN CS18Z3M0 115561\\\"^^xsd:string ;\\r\\n                                              enh:costPerHour 10.22 ;\\r\\n                                              enh:costPerkm 2.23 ;\\r\\n                                              enh:driveConfiguration \\\"LHD\\\"^^xsd:string ;\\r\\n                                              enh:licenceNumber \\\"B-KM 1781\\\"^^xsd:string ;\\r\\n                                              enh:loadCapacity 69.7 ;\\r\\n                                              enh:maximumSpeed 128 ;\\r\\n                                              enh:mileageReadDate \\\"21\\/01\\/2021\\\"^^xsd:string ;\\r\\n                                              enh:model \\\"190\\\"^^xsd:string ;\\r\\n                                              enh:noOfSeats 5 ;\\r\\n                                              enh:power 208 ;\\r\\n                                              enh:truckColor \\\"red\\\" ;\\r\\n                                              enh:truckNumber \\\"10\\\"^^xsd:string .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#Truck316a98e8_51a9_494b_9c0e_5207675f0a40\\r\\nenh:Truck316a98e8_51a9_494b_9c0e_5207675f0a40 rdf:type owl:NamedIndividual ,\\r\\n                                                       enh:Truck ;\\r\\n                                              enh:haCurrentLocation enh:Locationa8a0aed7_7a82_48f5_98d9_c281b50d1916 ;\\r\\n                                              enh:hasOwner enh:TransportationCompany5cfb2f42_500e_4856_9acb_80901669cb7f ;\\r\\n                                              enh:averageFuelConsumption 9.1 ;\\r\\n                                              enh:averageSpeed 64 ;\\r\\n                                              enh:chassisNumber \\\"WAU ZZZ8R8AA 042836\\\"^^xsd:string ;\\r\\n                                              enh:costPerHour 7.12 ;\\r\\n                                              enh:costPerkm 1.10 ;\\r\\n                                              enh:driveConfiguration \\\"LHD\\\"^^xsd:string ;\\r\\n                                              enh:licenceNumber \\\"B-V 1005\\\"^^xsd:string ;\\r\\n                                              enh:loadCapacity 60.1 ;\\r\\n                                              enh:maximumSpeed 112 ;\\r\\n                                              enh:mileageReadDate \\\"21\\/01\\/2020\\\"^^xsd:string ;\\r\\n                                              enh:model \\\"267\\\"^^xsd:string ;\\r\\n                                              enh:noOfSeats 5 ;\\r\\n                                              enh:power 149 ;\\r\\n                                              enh:truckColor \\\"blue\\\" ;\\r\\n                                              enh:truckNumber \\\"12\\\"^^xsd:string .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#Truck558082f1_3f5f_4587_b3a2_8a16256fe440\\r\\nenh:Truck558082f1_3f5f_4587_b3a2_8a16256fe440 rdf:type owl:NamedIndividual ,\\r\\n                                                       enh:Truck ;\\r\\n                                              enh:haCurrentLocation enh:Locationa8a0aed7_7a82_48f5_98d9_c281b50d1916 ;\\r\\n                                              enh:hasOwner enh:TransportationCompany5cfb2f42_500e_4856_9acb_80901669cb7f ;\\r\\n                                              enh:averageFuelConsumption 6.8 ;\\r\\n                                              enh:averageSpeed 56 ;\\r\\n                                              enh:chassisNumber \\\"WAU ZZZ8R8AA 76543\\\"^^xsd:string ;\\r\\n                                              enh:costPerHour 14.13 ;\\r\\n                                              enh:costPerkm 1.12 ;\\r\\n                                              enh:driveConfiguration \\\"RHD\\\"^^xsd:string ;\\r\\n                                              enh:licenceNumber \\\"B-BR 987\\\"^^xsd:string ;\\r\\n                                              enh:loadCapacity 50.1 ;\\r\\n                                              enh:maximumSpeed 120 ;\\r\\n                                              enh:mileageReadDate \\\"21\\/1\\/2020\\\"^^xsd:string ;\\r\\n                                              enh:model \\\"140\\\"^^xsd:string ;\\r\\n                                              enh:noOfSeats 4 ;\\r\\n                                              enh:power 179 ;\\r\\n                                              enh:truckColor \\\"green\\\" ;\\r\\n                                              enh:truckNumber \\\"13\\\"^^xsd:string .\\r\\n\\r\\n\\r\\n###  Generated by the OWL API (version 4.5.9.2019-02-01T07:24:44Z) https:\\/\\/github.com\\/owlcs\\/owlapi\\r\\n\",\r\n  \"context\": \"http://ont.enapso.com/truck\",\r\n  \"baseIRI\": \"http://ont.enapso.com/truck#\",\r\n  \"format\": \"text/turtle\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}{{namespace}}/v1/upload-ontology-from-text",
+							"host": [
+								"{{url}}{{namespace}}"
+							],
+							"path": [
+								"v1",
+								"upload-ontology-from-text"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Replace Ontology From Data",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-enapso-auth",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"fileData\": \"@prefix : <http:\\/\\/ont.enapso.com\\/truck#> .\\r\\n@prefix enh: <http:\\/\\/ont.enapso.com\\/truck#> .\\r\\n@prefix owl: <http:\\/\\/www.w3.org\\/2002\\/07\\/owl#> .\\r\\n@prefix rdf: <http:\\/\\/www.w3.org\\/1999\\/02\\/22-rdf-syntax-ns#> .\\r\\n@prefix xml: <http:\\/\\/www.w3.org\\/XML\\/1998\\/namespace> .\\r\\n@prefix xsd: <http:\\/\\/www.w3.org\\/2001\\/XMLSchema#> .\\r\\n@prefix rdfs: <http:\\/\\/www.w3.org\\/2000\\/01\\/rdf-schema#> .\\r\\n@prefix 1.0.0: <http:\\/\\/ont.enapso.com\\/truck\\/1.0.0#> .\\r\\n@prefix terms: <http:\\/\\/purl.org\\/dc\\/terms\\/> .\\r\\n@prefix schema: <https:\\/\\/schema.org\\/> .\\r\\n@base <http:\\/\\/ont.enapso.com\\/truck> .\\r\\n\\r\\n<http:\\/\\/ont.enapso.com\\/truck> rdf:type owl:Ontology ;\\r\\n                               owl:versionIRI <http:\\/\\/ont.enapso.com\\/truck\\/1.0.0> ;\\r\\n                               rdfs:comment \\\"ENAPSO Haigo Transportation Ontology\\\"@en .\\r\\n\\r\\n#################################################################\\r\\n#    Object Properties\\r\\n#################################################################\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#haCurrentLocation\\r\\nenh:haCurrentLocation rdf:type owl:ObjectProperty ;\\r\\n                      rdfs:label \\\"has Current Location\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#hasEndPoint\\r\\nenh:hasEndPoint rdf:type owl:ObjectProperty ;\\r\\n                rdfs:label \\\"has End Point\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#hasLoadingService\\r\\nenh:hasLoadingService rdf:type owl:ObjectProperty ;\\r\\n                      rdfs:label \\\"has Loading Service\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#hasMap\\r\\nenh:hasMap rdf:type owl:ObjectProperty ;\\r\\n           rdfs:label \\\"has Map\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#hasOrder\\r\\nenh:hasOrder rdf:type owl:ObjectProperty ;\\r\\n             rdfs:label \\\"has Order\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#hasOwner\\r\\nenh:hasOwner rdf:type owl:ObjectProperty ;\\r\\n             rdfs:label \\\"has Owner\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#hasRate\\r\\nenh:hasRate rdf:type owl:ObjectProperty ;\\r\\n            rdfs:label \\\"has Rate\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#hasRoutes\\r\\nenh:hasRoutes rdf:type owl:ObjectProperty ;\\r\\n              rdfs:label \\\"has Routes\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#hasStartPoint\\r\\nenh:hasStartPoint rdf:type owl:ObjectProperty ;\\r\\n                  rdfs:label \\\"has Start Point\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#hasTruck\\r\\nenh:hasTruck rdf:type owl:ObjectProperty ;\\r\\n             rdfs:label \\\"has Truck\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#hasUnLoadingService\\r\\nenh:hasUnLoadingService rdf:type owl:ObjectProperty ;\\r\\n                        rdfs:label \\\"has Un Loading Service\\\"@en .\\r\\n\\r\\n\\r\\n#################################################################\\r\\n#    Data properties\\r\\n#################################################################\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#DeliveryType\\r\\nenh:DeliveryType rdf:type owl:DatatypeProperty ;\\r\\n                 rdfs:label \\\"delivery Type\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#address\\r\\nenh:address rdf:type owl:DatatypeProperty ;\\r\\n            rdfs:label \\\"address\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#averageFuelConsumption\\r\\nenh:averageFuelConsumption rdf:type owl:DatatypeProperty ;\\r\\n                           rdfs:label \\\"average Fuel Consumption\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#averageSpeed\\r\\nenh:averageSpeed rdf:type owl:DatatypeProperty ;\\r\\n                 rdfs:label \\\"average Speed\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#cargoVolume\\r\\nenh:cargoVolume rdf:type owl:DatatypeProperty ;\\r\\n                rdfs:label \\\"cargo Volume\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#chassisNumber\\r\\nenh:chassisNumber rdf:type owl:DatatypeProperty ;\\r\\n                  rdfs:label \\\"chassis Number\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#costPerHour\\r\\nenh:costPerHour rdf:type owl:DatatypeProperty ;\\r\\n                rdfs:label \\\"cost Per Hour\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#costPerkm\\r\\nenh:costPerkm rdf:type owl:DatatypeProperty ;\\r\\n              rdfs:label \\\"cost Per km\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#deliveryAddress\\r\\nenh:deliveryAddress rdf:type owl:DatatypeProperty ;\\r\\n                    rdfs:label \\\"delivery Address\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#deliveryDistance\\r\\nenh:deliveryDistance rdf:type owl:DatatypeProperty ;\\r\\n                     rdfs:label \\\"delivery Distance\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#driveConfiguration\\r\\nenh:driveConfiguration rdf:type owl:DatatypeProperty ;\\r\\n                       rdfs:label \\\"drive Configuration\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#expectedDeliveryDate\\r\\nenh:expectedDeliveryDate rdf:type owl:DatatypeProperty ;\\r\\n                         rdfs:label \\\"expected Delivery Date\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#licenceNumber\\r\\nenh:licenceNumber rdf:type owl:DatatypeProperty ;\\r\\n                  rdfs:label \\\"licence Number\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#loadCapacity\\r\\nenh:loadCapacity rdf:type owl:DatatypeProperty ;\\r\\n                 rdfs:label \\\"load Capacity\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#loadingCost\\r\\nenh:loadingCost rdf:type owl:DatatypeProperty ;\\r\\n                rdfs:label \\\"loading Cost\\\" .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#loadingTime\\r\\nenh:loadingTime rdf:type owl:DatatypeProperty ;\\r\\n                rdfs:label \\\"loading Time\\\" .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#make\\r\\nenh:make rdf:type owl:DatatypeProperty ;\\r\\n         rdfs:label \\\"make\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#maximumSpeed\\r\\nenh:maximumSpeed rdf:type owl:DatatypeProperty ;\\r\\n                 rdfs:label \\\"maximum Speed\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#mileageReadDate\\r\\nenh:mileageReadDate rdf:type owl:DatatypeProperty ;\\r\\n                    rdfs:label \\\"mileage Read Date\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#model\\r\\nenh:model rdf:type owl:DatatypeProperty ;\\r\\n          rdfs:label \\\"model\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#name\\r\\nenh:name rdf:type owl:DatatypeProperty ;\\r\\n         rdfs:label \\\"name\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#noOfSeats\\r\\nenh:noOfSeats rdf:type owl:DatatypeProperty ;\\r\\n              rdfs:label \\\"no of seats\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#orderId\\r\\nenh:orderId rdf:type owl:DatatypeProperty ;\\r\\n            rdfs:label \\\"order Id\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#orderdate\\r\\nenh:orderdate rdf:type owl:DatatypeProperty ;\\r\\n              rdfs:label \\\"order Date\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#power\\r\\nenh:power rdf:type owl:DatatypeProperty ;\\r\\n          rdfs:label \\\"power\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#ratePerVolume\\r\\nenh:ratePerVolume rdf:type owl:DatatypeProperty ;\\r\\n                  rdfs:label \\\"rate Per Volume\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#status\\r\\nenh:status rdf:type owl:DatatypeProperty ;\\r\\n           rdfs:label \\\"status\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#time\\r\\nenh:time rdf:type owl:DatatypeProperty ;\\r\\n         rdfs:label \\\"time\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#totalMileage\\r\\nenh:totalMileage rdf:type owl:DatatypeProperty ;\\r\\n                 rdfs:label \\\"total Mileage\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#transportCharges\\r\\nenh:transportCharges rdf:type owl:DatatypeProperty ;\\r\\n                     rdfs:label \\\"transport Charges\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#truckColor\\r\\nenh:truckColor rdf:type owl:DatatypeProperty .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#truckNumber\\r\\nenh:truckNumber rdf:type owl:DatatypeProperty ;\\r\\n                rdfs:label \\\"truck Number\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#unLoadingCost\\r\\nenh:unLoadingCost rdf:type owl:DatatypeProperty ;\\r\\n                  rdfs:label \\\"un Loading Cost\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#unLoadingTime\\r\\nenh:unLoadingTime rdf:type owl:DatatypeProperty ;\\r\\n                  rdfs:label \\\"un Loading Time\\\"@en .\\r\\n\\r\\n\\r\\n#################################################################\\r\\n#    Classes\\r\\n#################################################################\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#DeliveryPlan\\r\\nenh:DeliveryPlan rdf:type owl:Class ;\\r\\n                 rdfs:subClassOf [ rdf:type owl:Restriction ;\\r\\n                                   owl:onProperty enh:hasOrder ;\\r\\n                                   owl:allValuesFrom enh:Order\\r\\n                                 ] ,\\r\\n                                 [ rdf:type owl:Restriction ;\\r\\n                                   owl:onProperty enh:hasTruck ;\\r\\n                                   owl:qualifiedCardinality \\\"1\\\"^^xsd:nonNegativeInteger ;\\r\\n                                   owl:onClass enh:Truck\\r\\n                                 ] ,\\r\\n                                 [ rdf:type owl:Restriction ;\\r\\n                                   owl:onProperty enh:status ;\\r\\n                                   owl:qualifiedCardinality \\\"1\\\"^^xsd:nonNegativeInteger ;\\r\\n                                   owl:onDataRange xsd:string\\r\\n                                 ] ;\\r\\n                 rdfs:comment \\\"Delivery plan means how a order deliver through which truck and using which route through map\\\"@en ;\\r\\n                 rdfs:label \\\"Delivery Plan\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#GeoLocation\\r\\nenh:GeoLocation rdf:type owl:Class ;\\r\\n                rdfs:subClassOf enh:Location ;\\r\\n                rdfs:comment \\\"Gro Location is a technique of identifying the geographical location of a person or device by means of digital information processed via the internet.\\\"@en ;\\r\\n                rdfs:label \\\"Geo Location\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#Location\\r\\nenh:Location rdf:type owl:Class ;\\r\\n             rdfs:subClassOf [ rdf:type owl:Restriction ;\\r\\n                               owl:onProperty enh:address ;\\r\\n                               owl:qualifiedCardinality \\\"1\\\"^^xsd:nonNegativeInteger ;\\r\\n                               owl:onDataRange xsd:string\\r\\n                             ] ;\\r\\n             rdfs:comment \\\"Location is a particular place or position.\\\"@en ;\\r\\n             rdfs:label \\\"Location\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#Map\\r\\nenh:Map rdf:type owl:Class ;\\r\\n        rdfs:subClassOf [ rdf:type owl:Restriction ;\\r\\n                          owl:onProperty enh:hasRoutes ;\\r\\n                          owl:allValuesFrom enh:Route\\r\\n                        ] ;\\r\\n        rdfs:label \\\"Map\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#Order\\r\\nenh:Order rdf:type owl:Class ;\\r\\n          rdfs:subClassOf [ rdf:type owl:Restriction ;\\r\\n                            owl:onProperty enh:hasRate ;\\r\\n                            owl:qualifiedCardinality \\\"1\\\"^^xsd:nonNegativeInteger ;\\r\\n                            owl:onClass enh:Rate\\r\\n                          ] ,\\r\\n                          [ rdf:type owl:Restriction ;\\r\\n                            owl:onProperty enh:hasRoutes ;\\r\\n                            owl:qualifiedCardinality \\\"1\\\"^^xsd:nonNegativeInteger ;\\r\\n                            owl:onClass enh:Route\\r\\n                          ] ,\\r\\n                          [ rdf:type owl:Restriction ;\\r\\n                            owl:onProperty enh:unLoadingTime ;\\r\\n                            owl:someValuesFrom xsd:string\\r\\n                          ] ,\\r\\n                          [ rdf:type owl:Restriction ;\\r\\n                            owl:onProperty enh:cargoVolume ;\\r\\n                            owl:qualifiedCardinality \\\"1\\\"^^xsd:nonNegativeInteger ;\\r\\n                            owl:onDataRange xsd:string\\r\\n                          ] ,\\r\\n                          [ rdf:type owl:Restriction ;\\r\\n                            owl:onProperty enh:deliveryAddress ;\\r\\n                            owl:qualifiedCardinality \\\"1\\\"^^xsd:nonNegativeInteger ;\\r\\n                            owl:onDataRange xsd:string\\r\\n                          ] ,\\r\\n                          [ rdf:type owl:Restriction ;\\r\\n                            owl:onProperty enh:expectedDeliveryDate ;\\r\\n                            owl:qualifiedCardinality \\\"1\\\"^^xsd:nonNegativeInteger ;\\r\\n                            owl:onDataRange xsd:string\\r\\n                          ] ,\\r\\n                          [ rdf:type owl:Restriction ;\\r\\n                            owl:onProperty enh:orderId ;\\r\\n                            owl:qualifiedCardinality \\\"1\\\"^^xsd:nonNegativeInteger ;\\r\\n                            owl:onDataRange xsd:string\\r\\n                          ] ,\\r\\n                          [ rdf:type owl:Restriction ;\\r\\n                            owl:onProperty enh:orderdate ;\\r\\n                            owl:qualifiedCardinality \\\"1\\\"^^xsd:nonNegativeInteger ;\\r\\n                            owl:onDataRange xsd:string\\r\\n                          ] ,\\r\\n                          [ rdf:type owl:Restriction ;\\r\\n                            owl:onProperty enh:status ;\\r\\n                            owl:qualifiedCardinality \\\"1\\\"^^xsd:nonNegativeInteger ;\\r\\n                            owl:onDataRange xsd:string\\r\\n                          ] ,\\r\\n                          [ rdf:type owl:Restriction ;\\r\\n                            owl:onProperty enh:transportCharges ;\\r\\n                            owl:qualifiedCardinality \\\"1\\\"^^xsd:nonNegativeInteger ;\\r\\n                            owl:onDataRange xsd:string\\r\\n                          ] ,\\r\\n                          [ rdf:type owl:Restriction ;\\r\\n                            owl:onProperty enh:loadingCost ;\\r\\n                            owl:maxQualifiedCardinality \\\"1\\\"^^xsd:nonNegativeInteger ;\\r\\n                            owl:onDataRange xsd:string\\r\\n                          ] ,\\r\\n                          [ rdf:type owl:Restriction ;\\r\\n                            owl:onProperty enh:loadingTime ;\\r\\n                            owl:maxQualifiedCardinality \\\"1\\\"^^xsd:nonNegativeInteger ;\\r\\n                            owl:onDataRange xsd:string\\r\\n                          ] ;\\r\\n          rdfs:label \\\"Order\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#Rate\\r\\nenh:Rate rdf:type owl:Class ;\\r\\n         rdfs:subClassOf [ rdf:type owl:Restriction ;\\r\\n                           owl:onProperty enh:hasOwner ;\\r\\n                           owl:qualifiedCardinality \\\"1\\\"^^xsd:nonNegativeInteger ;\\r\\n                           owl:onClass enh:TransportCompany\\r\\n                         ] ,\\r\\n                         [ rdf:type owl:Restriction ;\\r\\n                           owl:onProperty enh:DeliveryType ;\\r\\n                           owl:qualifiedCardinality \\\"1\\\"^^xsd:nonNegativeInteger ;\\r\\n                           owl:onDataRange xsd:string\\r\\n                         ] ,\\r\\n                         [ rdf:type owl:Restriction ;\\r\\n                           owl:onProperty enh:ratePerVolume ;\\r\\n                           owl:qualifiedCardinality \\\"1\\\"^^xsd:nonNegativeInteger ;\\r\\n                           owl:onDataRange xsd:string\\r\\n                         ] ;\\r\\n         rdfs:comment \\\"A rate calculator is the ratio between two related quantities in different units.\\\"@en ;\\r\\n         rdfs:label \\\"Rate\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#Route\\r\\nenh:Route rdf:type owl:Class ;\\r\\n          rdfs:subClassOf [ rdf:type owl:Restriction ;\\r\\n                            owl:onProperty enh:hasEndPoint ;\\r\\n                            owl:qualifiedCardinality \\\"1\\\"^^xsd:nonNegativeInteger ;\\r\\n                            owl:onClass enh:Location\\r\\n                          ] ,\\r\\n                          [ rdf:type owl:Restriction ;\\r\\n                            owl:onProperty enh:hasStartPoint ;\\r\\n                            owl:qualifiedCardinality \\\"1\\\"^^xsd:nonNegativeInteger ;\\r\\n                            owl:onClass enh:Location\\r\\n                          ] ,\\r\\n                          [ rdf:type owl:Restriction ;\\r\\n                            owl:onProperty enh:deliveryDistance ;\\r\\n                            owl:qualifiedCardinality \\\"1\\\"^^xsd:nonNegativeInteger ;\\r\\n                            owl:onDataRange xsd:integer\\r\\n                          ] ;\\r\\n          rdfs:comment \\\"A transportation route is the regular path that is followed by a movement of people or goods.\\\"@en ;\\r\\n          rdfs:label \\\"Route\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#StreetLocation\\r\\nenh:StreetLocation rdf:type owl:Class ;\\r\\n                   rdfs:subClassOf enh:Location ;\\r\\n                   rdfs:comment \\\"Street Location is a location that primarily displays roads and transport links.\\\"@en ;\\r\\n                   rdfs:label \\\"Street Location\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#TransportCompany\\r\\nenh:TransportCompany rdf:type owl:Class ;\\r\\n                     rdfs:subClassOf [ rdf:type owl:Restriction ;\\r\\n                                       owl:onProperty enh:address ;\\r\\n                                       owl:qualifiedCardinality \\\"1\\\"^^xsd:nonNegativeInteger ;\\r\\n                                       owl:onDataRange xsd:string\\r\\n                                     ] ,\\r\\n                                     [ rdf:type owl:Restriction ;\\r\\n                                       owl:onProperty enh:name ;\\r\\n                                       owl:qualifiedCardinality \\\"1\\\"^^xsd:nonNegativeInteger ;\\r\\n                                       owl:onDataRange xsd:string\\r\\n                                     ] ;\\r\\n                     rdfs:comment \\\"A transportation company is a business that transports freight from one location to another which is a key in the value chain in manufacturing\\\"@en ;\\r\\n                     rdfs:label \\\"Transport Company\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#Truck\\r\\nenh:Truck rdf:type owl:Class ;\\r\\n          rdfs:subClassOf [ rdf:type owl:Restriction ;\\r\\n                            owl:onProperty enh:hasOwner ;\\r\\n                            owl:qualifiedCardinality \\\"1\\\"^^xsd:nonNegativeInteger ;\\r\\n                            owl:onClass enh:TransportCompany\\r\\n                          ] ,\\r\\n                          [ rdf:type owl:Restriction ;\\r\\n                            owl:onProperty enh:haCurrentLocation ;\\r\\n                            owl:maxQualifiedCardinality \\\"1\\\"^^xsd:nonNegativeInteger ;\\r\\n                            owl:onClass enh:Location\\r\\n                          ] ,\\r\\n                          [ rdf:type owl:Restriction ;\\r\\n                            owl:onProperty enh:averageSpeed ;\\r\\n                            owl:qualifiedCardinality \\\"1\\\"^^xsd:nonNegativeInteger ;\\r\\n                            owl:onDataRange xsd:integer\\r\\n                          ] ,\\r\\n                          [ rdf:type owl:Restriction ;\\r\\n                            owl:onProperty enh:chassisNumber ;\\r\\n                            owl:qualifiedCardinality \\\"1\\\"^^xsd:nonNegativeInteger ;\\r\\n                            owl:onDataRange xsd:string\\r\\n                          ] ,\\r\\n                          [ rdf:type owl:Restriction ;\\r\\n                            owl:onProperty enh:costPerHour ;\\r\\n                            owl:qualifiedCardinality \\\"1\\\"^^xsd:nonNegativeInteger ;\\r\\n                            owl:onDataRange xsd:decimal\\r\\n                          ] ,\\r\\n                          [ rdf:type owl:Restriction ;\\r\\n                            owl:onProperty enh:costPerkm ;\\r\\n                            owl:qualifiedCardinality \\\"1\\\"^^xsd:nonNegativeInteger ;\\r\\n                            owl:onDataRange xsd:decimal\\r\\n                          ] ,\\r\\n                          [ rdf:type owl:Restriction ;\\r\\n                            owl:onProperty enh:driveConfiguration ;\\r\\n                            owl:qualifiedCardinality \\\"1\\\"^^xsd:nonNegativeInteger ;\\r\\n                            owl:onDataRange xsd:string\\r\\n                          ] ,\\r\\n                          [ rdf:type owl:Restriction ;\\r\\n                            owl:onProperty enh:licenceNumber ;\\r\\n                            owl:qualifiedCardinality \\\"1\\\"^^xsd:nonNegativeInteger ;\\r\\n                            owl:onDataRange xsd:string\\r\\n                          ] ,\\r\\n                          [ rdf:type owl:Restriction ;\\r\\n                            owl:onProperty enh:loadCapacity ;\\r\\n                            owl:qualifiedCardinality \\\"1\\\"^^xsd:nonNegativeInteger ;\\r\\n                            owl:onDataRange xsd:decimal\\r\\n                          ] ,\\r\\n                          [ rdf:type owl:Restriction ;\\r\\n                            owl:onProperty enh:model ;\\r\\n                            owl:qualifiedCardinality \\\"1\\\"^^xsd:nonNegativeInteger ;\\r\\n                            owl:onDataRange xsd:string\\r\\n                          ] ,\\r\\n                          [ rdf:type owl:Restriction ;\\r\\n                            owl:onProperty enh:power ;\\r\\n                            owl:qualifiedCardinality \\\"1\\\"^^xsd:nonNegativeInteger ;\\r\\n                            owl:onDataRange xsd:integer\\r\\n                          ] ,\\r\\n                          [ rdf:type owl:Restriction ;\\r\\n                            owl:onProperty enh:truckNumber ;\\r\\n                            owl:qualifiedCardinality \\\"1\\\"^^xsd:nonNegativeInteger ;\\r\\n                            owl:onDataRange xsd:string\\r\\n                          ] ,\\r\\n                          [ rdf:type owl:Restriction ;\\r\\n                            owl:onProperty enh:averageFuelConsumption ;\\r\\n                            owl:maxQualifiedCardinality \\\"1\\\"^^xsd:nonNegativeInteger ;\\r\\n                            owl:onDataRange xsd:decimal\\r\\n                          ] ,\\r\\n                          [ rdf:type owl:Restriction ;\\r\\n                            owl:onProperty enh:make ;\\r\\n                            owl:maxQualifiedCardinality \\\"1\\\"^^xsd:nonNegativeInteger ;\\r\\n                            owl:onDataRange xsd:string\\r\\n                          ] ,\\r\\n                          [ rdf:type owl:Restriction ;\\r\\n                            owl:onProperty enh:maximumSpeed ;\\r\\n                            owl:maxQualifiedCardinality \\\"1\\\"^^xsd:nonNegativeInteger ;\\r\\n                            owl:onDataRange xsd:integer\\r\\n                          ] ,\\r\\n                          [ rdf:type owl:Restriction ;\\r\\n                            owl:onProperty enh:totalMileage ;\\r\\n                            owl:maxQualifiedCardinality \\\"1\\\"^^xsd:nonNegativeInteger ;\\r\\n                            owl:onDataRange xsd:string\\r\\n                          ] ;\\r\\n          rdfs:comment \\\"A truck is a motor vehicle designed to transport cargo. Trucks vary greatly in size, power, and configuration.\\\"@en ;\\r\\n          rdfs:label \\\"Truck\\\"@en .\\r\\n\\r\\n\\r\\n#################################################################\\r\\n#    Individuals\\r\\n#################################################################\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#DeliveryPlaneb63ee72_a078_4864_bc23_9577da504c9c\\r\\nenh:DeliveryPlaneb63ee72_a078_4864_bc23_9577da504c9c rdf:type owl:NamedIndividual ,\\r\\n                                                              enh:DeliveryPlan ;\\r\\n                                                     enh:hasOrder enh:Ordercf913614_a727_4dc0_99b5_bf99eacdf5bb ;\\r\\n                                                     enh:hasTruck enh:Truck025d8a60_50fe_41ce_abd2_1acda942b83a ;\\r\\n                                                     enh:status \\\"Delivered\\\"^^xsd:string ;\\r\\n                                                     rdfs:label \\\"Order 1 DeliveryPlan\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#Location1dccb805_064f_490f_9392_64f3331673d8\\r\\nenh:Location1dccb805_064f_490f_9392_64f3331673d8 rdf:type owl:NamedIndividual ,\\r\\n                                                          enh:Location ;\\r\\n                                                 enh:address \\\"Bremen\\\"^^xsd:string ;\\r\\n                                                 rdfs:label \\\"Bremen\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#Location2fe7aebd_7b01_4f01_baa1_0482ebf09812\\r\\nenh:Location2fe7aebd_7b01_4f01_baa1_0482ebf09812 rdf:type owl:NamedIndividual ,\\r\\n                                                          enh:Location ;\\r\\n                                                 enh:address \\\"Cologne\\\"^^xsd:string ;\\r\\n                                                 rdfs:label \\\"Cologne\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#Location3539b55d_2a6b_47f5_b35b_57267ce0f1cc\\r\\nenh:Location3539b55d_2a6b_47f5_b35b_57267ce0f1cc rdf:type owl:NamedIndividual ,\\r\\n                                                          enh:Location ;\\r\\n                                                 enh:address \\\"Hamburg\\\"^^xsd:string ;\\r\\n                                                 rdfs:label \\\"Hamburg\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#Locationa17eec90_cd8d_45ec_9054_b81bdefa6169\\r\\nenh:Locationa17eec90_cd8d_45ec_9054_b81bdefa6169 rdf:type owl:NamedIndividual ,\\r\\n                                                          enh:Location ;\\r\\n                                                 enh:address \\\"Munich\\\"^^xsd:string ;\\r\\n                                                 rdfs:label \\\"Munich\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#Locationa8a0aed7_7a82_48f5_98d9_c281b50d1916\\r\\nenh:Locationa8a0aed7_7a82_48f5_98d9_c281b50d1916 rdf:type owl:NamedIndividual ,\\r\\n                                                          enh:Location ;\\r\\n                                                 enh:address \\\"Berlin\\\"^^xsd:string ;\\r\\n                                                 rdfs:label \\\"Berlin\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#Mapb755fa6e_9f8a_4f2b_92d2_699e185ba601\\r\\nenh:Mapb755fa6e_9f8a_4f2b_92d2_699e185ba601 rdf:type owl:NamedIndividual ,\\r\\n                                                     enh:Map ;\\r\\n                                            enh:hasRoutes enh:Routeb9050b1b_12e4_41c7_91b6_fbde92d954f3 ,\\r\\n                                                          enh:Routec6c73b57_9756_45dc_a28f_2ee2a99fdc98 ,\\r\\n                                                          enh:Routef195f1f3_6fae_4263_a1d5_300493896a58 ;\\r\\n                                            rdfs:label \\\"Map\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#Ordercf913614_a727_4dc0_99b5_bf99eacdf5bb\\r\\nenh:Ordercf913614_a727_4dc0_99b5_bf99eacdf5bb rdf:type owl:NamedIndividual ,\\r\\n                                                       enh:Order ;\\r\\n                                              enh:hasRate enh:RateCalculator9738c1c3_3d68_478e_a195_f398c53af784 ;\\r\\n                                              enh:hasRoutes enh:Routec6c73b57_9756_45dc_a28f_2ee2a99fdc98 ;\\r\\n                                              enh:cargoVolume 40.2 ;\\r\\n                                              enh:deliveryAddress \\\"Fasanenstr. 57, 22763 Hamburg, Germany\\\"^^xsd:string ;\\r\\n                                              enh:expectedDeliveryDate \\\"2021-06-08\\\"^^xsd:string ;\\r\\n                                              enh:loadingCost 150.12 ;\\r\\n                                              enh:loadingTime 2 ;\\r\\n                                              enh:orderId \\\"3794213\\\"^^xsd:string ;\\r\\n                                              enh:orderdate \\\"2021-06-04\\\"^^xsd:string ;\\r\\n                                              enh:transportCharges 1520.33 ;\\r\\n                                              enh:unLoadingCost 90.12 ;\\r\\n                                              enh:unLoadingTime 2 ;\\r\\n                                              rdfs:label \\\"Order1\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#RateCalculator142bc4a2_5c50_441c_b3db_b2e5985ae0a8\\r\\nenh:RateCalculator142bc4a2_5c50_441c_b3db_b2e5985ae0a8 rdf:type owl:NamedIndividual ,\\r\\n                                                                enh:Rate ;\\r\\n                                                       enh:hasOwner enh:TransportationCompany5cfb2f42_500e_4856_9acb_80901669cb7f ;\\r\\n                                                       enh:DeliveryType \\\"Express\\\"^^xsd:string ;\\r\\n                                                       enh:ratePerVolume 50 ;\\r\\n                                                       rdfs:label \\\"Express Rate\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#RateCalculator9738c1c3_3d68_478e_a195_f398c53af784\\r\\nenh:RateCalculator9738c1c3_3d68_478e_a195_f398c53af784 rdf:type owl:NamedIndividual ,\\r\\n                                                                enh:Rate ;\\r\\n                                                       enh:hasOwner enh:TransportationCompany5cfb2f42_500e_4856_9acb_80901669cb7f ;\\r\\n                                                       enh:DeliveryType \\\"Normal\\\"^^xsd:string ;\\r\\n                                                       enh:ratePerVolume 30.00 ;\\r\\n                                                       rdfs:label \\\"Normal Rate\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#Routeb9050b1b_12e4_41c7_91b6_fbde92d954f3\\r\\nenh:Routeb9050b1b_12e4_41c7_91b6_fbde92d954f3 rdf:type owl:NamedIndividual ,\\r\\n                                                       enh:Route ;\\r\\n                                              enh:hasEndPoint enh:Location2fe7aebd_7b01_4f01_baa1_0482ebf09812 ;\\r\\n                                              enh:hasStartPoint enh:Locationa8a0aed7_7a82_48f5_98d9_c281b50d1916 ;\\r\\n                                              enh:deliveryDistance 356 ;\\r\\n                                              rdfs:label \\\"Berlin To Cologne Route\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#Routec6c73b57_9756_45dc_a28f_2ee2a99fdc98\\r\\nenh:Routec6c73b57_9756_45dc_a28f_2ee2a99fdc98 rdf:type owl:NamedIndividual ,\\r\\n                                                       enh:Route ;\\r\\n                                              enh:hasEndPoint enh:Location3539b55d_2a6b_47f5_b35b_57267ce0f1cc ;\\r\\n                                              enh:hasStartPoint enh:Locationa8a0aed7_7a82_48f5_98d9_c281b50d1916 ;\\r\\n                                              enh:deliveryDistance 178 ;\\r\\n                                              rdfs:label \\\"Berlin To Hamburg Route\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#Routef195f1f3_6fae_4263_a1d5_300493896a58\\r\\nenh:Routef195f1f3_6fae_4263_a1d5_300493896a58 rdf:type owl:NamedIndividual ,\\r\\n                                                       enh:Route ;\\r\\n                                              enh:hasEndPoint enh:Locationa17eec90_cd8d_45ec_9054_b81bdefa6169 ;\\r\\n                                              enh:hasStartPoint enh:Locationa8a0aed7_7a82_48f5_98d9_c281b50d1916 ;\\r\\n                                              enh:deliveryDistance 364 ;\\r\\n                                              rdfs:label \\\"Berlin To Munich Route\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#TransportationCompany5cfb2f42_500e_4856_9acb_80901669cb7f\\r\\nenh:TransportationCompany5cfb2f42_500e_4856_9acb_80901669cb7f rdf:type owl:NamedIndividual ,\\r\\n                                                                       enh:TransportCompany ;\\r\\n                                                              enh:address \\\"Shahab Pura Road Sialkot\\\"^^xsd:string ;\\r\\n                                                              enh:name \\\"Haigo Transportation\\\"^^xsd:string ;\\r\\n                                                              rdfs:label \\\"Haigo Transportation\\\"@en .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#Truck025d8a60_50fe_41ce_abd2_1acda942b83a\\r\\nenh:Truck025d8a60_50fe_41ce_abd2_1acda942b83a rdf:type owl:NamedIndividual ,\\r\\n                                                       enh:Truck ;\\r\\n                                              enh:haCurrentLocation enh:Locationa8a0aed7_7a82_48f5_98d9_c281b50d1916 ;\\r\\n                                              enh:hasOwner enh:TransportationCompany5cfb2f42_500e_4856_9acb_80901669cb7f ;\\r\\n                                              enh:averageFuelConsumption 7.2 ;\\r\\n                                              enh:averageSpeed 48 ;\\r\\n                                              enh:chassisNumber \\\"1GN CS18Z3M0 115561\\\"^^xsd:string ;\\r\\n                                              enh:costPerHour 10.22 ;\\r\\n                                              enh:costPerkm 2.23 ;\\r\\n                                              enh:driveConfiguration \\\"LHD\\\"^^xsd:string ;\\r\\n                                              enh:licenceNumber \\\"B-KM 1781\\\"^^xsd:string ;\\r\\n                                              enh:loadCapacity 69.7 ;\\r\\n                                              enh:maximumSpeed 128 ;\\r\\n                                              enh:mileageReadDate \\\"21\\/01\\/2021\\\"^^xsd:string ;\\r\\n                                              enh:model \\\"190\\\"^^xsd:string ;\\r\\n                                              enh:noOfSeats 5 ;\\r\\n                                              enh:power 208 ;\\r\\n                                              enh:truckColor \\\"red\\\" ;\\r\\n                                              enh:truckNumber \\\"10\\\"^^xsd:string .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#Truck316a98e8_51a9_494b_9c0e_5207675f0a40\\r\\nenh:Truck316a98e8_51a9_494b_9c0e_5207675f0a40 rdf:type owl:NamedIndividual ,\\r\\n                                                       enh:Truck ;\\r\\n                                              enh:haCurrentLocation enh:Locationa8a0aed7_7a82_48f5_98d9_c281b50d1916 ;\\r\\n                                              enh:hasOwner enh:TransportationCompany5cfb2f42_500e_4856_9acb_80901669cb7f ;\\r\\n                                              enh:averageFuelConsumption 9.1 ;\\r\\n                                              enh:averageSpeed 64 ;\\r\\n                                              enh:chassisNumber \\\"WAU ZZZ8R8AA 042836\\\"^^xsd:string ;\\r\\n                                              enh:costPerHour 7.12 ;\\r\\n                                              enh:costPerkm 1.10 ;\\r\\n                                              enh:driveConfiguration \\\"LHD\\\"^^xsd:string ;\\r\\n                                              enh:licenceNumber \\\"B-V 1005\\\"^^xsd:string ;\\r\\n                                              enh:loadCapacity 60.1 ;\\r\\n                                              enh:maximumSpeed 112 ;\\r\\n                                              enh:mileageReadDate \\\"21\\/01\\/2020\\\"^^xsd:string ;\\r\\n                                              enh:model \\\"267\\\"^^xsd:string ;\\r\\n                                              enh:noOfSeats 5 ;\\r\\n                                              enh:power 149 ;\\r\\n                                              enh:truckColor \\\"blue\\\" ;\\r\\n                                              enh:truckNumber \\\"12\\\"^^xsd:string .\\r\\n\\r\\n\\r\\n###  http:\\/\\/ont.enapso.com\\/truck#Truck558082f1_3f5f_4587_b3a2_8a16256fe440\\r\\nenh:Truck558082f1_3f5f_4587_b3a2_8a16256fe440 rdf:type owl:NamedIndividual ,\\r\\n                                                       enh:Truck ;\\r\\n                                              enh:haCurrentLocation enh:Locationa8a0aed7_7a82_48f5_98d9_c281b50d1916 ;\\r\\n                                              enh:hasOwner enh:TransportationCompany5cfb2f42_500e_4856_9acb_80901669cb7f ;\\r\\n                                              enh:averageFuelConsumption 6.8 ;\\r\\n                                              enh:averageSpeed 56 ;\\r\\n                                              enh:chassisNumber \\\"WAU ZZZ8R8AA 76543\\\"^^xsd:string ;\\r\\n                                              enh:costPerHour 14.13 ;\\r\\n                                              enh:costPerkm 1.12 ;\\r\\n                                              enh:driveConfiguration \\\"RHD\\\"^^xsd:string ;\\r\\n                                              enh:licenceNumber \\\"B-BR 987\\\"^^xsd:string ;\\r\\n                                              enh:loadCapacity 50.1 ;\\r\\n                                              enh:maximumSpeed 120 ;\\r\\n                                              enh:mileageReadDate \\\"21\\/1\\/2020\\\"^^xsd:string ;\\r\\n                                              enh:model \\\"140\\\"^^xsd:string ;\\r\\n                                              enh:noOfSeats 4 ;\\r\\n                                              enh:power 179 ;\\r\\n                                              enh:truckColor \\\"green\\\" ;\\r\\n                                              enh:truckNumber \\\"13\\\"^^xsd:string .\\r\\n\\r\\n\\r\\n###  Generated by the OWL API (version 4.5.9.2019-02-01T07:24:44Z) https:\\/\\/github.com\\/owlcs\\/owlapi\\r\\n\",\r\n  \"context\": \"http://ont.enapso.com/truck\",\r\n  \"baseIRI\": \"http://ont.enapso.com/truck#\",\r\n  \"format\": \"text/turtle\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}{{namespace}}/v1/replace-ontology-from-text",
+							"host": [
+								"{{url}}{{namespace}}"
+							],
+							"path": [
+								"v1",
+								"replace-ontology-from-text"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Database",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-enapso-auth",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"schema\": \"Test-Respository\",\r\n  \"title\":\"ENAPSO Test Respository\",\r\n  \"isShacl\":true,\r\n  \"ruleset\":\"rdfsplus-optimized\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}{{namespace}}/v1/create-database",
+							"host": [
+								"{{url}}{{namespace}}"
+							],
+							"path": [
+								"v1",
+								"create-database"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Database",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-enapso-auth",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"schema\": \"Test-Respository\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}{{namespace}}/v1/delete-database",
+							"host": [
+								"{{url}}{{namespace}}"
+							],
+							"path": [
+								"v1",
+								"delete-database"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Database User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-enapso-auth",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"authorities\": [\r\n    \"WRITE_REPO_Test\",\r\n    \"READ_REPO_Test\",\r\n    \"ROLE_USER\"\r\n  ],\r\n  \"userName\": \"TestUser\",\r\n  \"password\": \"TestUser\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}{{namespace}}/v1/create-database-user",
+							"host": [
+								"{{url}}{{namespace}}"
+							],
+							"path": [
+								"v1",
+								"create-database-user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Database User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-enapso-auth",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"authorities\": [\r\n    \"WRITE_REPO_Test\",\r\n    \"READ_REPO_Test\",\r\n    \"ROLE_USER\"\r\n  ],\r\n  \"userName\": \"TestUser\",\r\n  \"password\": \"TestUser\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}{{namespace}}/v1/update-database-user",
+							"host": [
+								"{{url}}{{namespace}}"
+							],
+							"path": [
+								"v1",
+								"update-database-user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Database User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-enapso-auth",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"userName\": \"TestUser\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}{{namespace}}/v1/delete-database-user",
+							"host": [
+								"{{url}}{{namespace}}"
+							],
+							"path": [
+								"v1",
+								"delete-database-user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Generate and Import Mock Data",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-enapso-auth",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"cls\": \"http://ont.enapso.com/model/mockaspect#MockForPerson\", \r\n   \"noOfRecords\" : \"5\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}{{namespace}}/v1/generate-and-import-mock-data",
+							"host": [
+								"{{url}}{{namespace}}"
+							],
+							"path": [
+								"v1",
+								"generate-and-import-mock-data"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"if(pm.environment.get(\"ngnix\") == \"false\"){",
+							"pm.collectionVariables.set(\"namespace\", \":3006\");",
+							"}else{",
+							"",
+							"    pm.collectionVariables.set(\"namespace\", \"/enapso-dev/graphdb-management\");",
+							"",
+							"}"
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "API Assistant Service",
+			"item": [
+				{
+					"name": "Create Endpoints",
+					"item": [
+						{
+							"name": "Create Endpoint for individual",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "x-enapso-auth",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"records\": [\r\n        {\r\n            \"cls\": \"http://www.ebu.ch/metadata/ontologies/ebucore/ebucore#EditorialObject\",\r\n            \"roles\": {\r\n                \"post\": \"EditorialObject-create\",\r\n                \"get\": \"EditorialObject-read\",\r\n                \"put\": \"EditorialObject-update\",\r\n                \"delete\": \"EditorialObject-delete\"\r\n            }\r\n        }\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}{{namespace}}/v1/create-crud-endpoints-4-individuals",
+									"host": [
+										"{{url}}{{namespace}}"
+									],
+									"path": [
+										"v1",
+										"create-crud-endpoints-4-individuals"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create CRUD Endpoint for Classes",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "x-enapso-auth",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"records\": [\r\n        {\r\n            \"cls\": \"http://ont.enapso.com/foundation#Attribute\",\r\n            \"roles\": {\r\n                \"post\": \"attribute-create\",\r\n                \"get\": \"attribute-read\",\r\n                \"put\": \"attribute-update\",\r\n                \"delete\": \"attribute-delete\"\r\n            }\r\n        },\r\n        {\r\n            \"cls\": \"http://ont.enapso.com/foundation#Capability\",\r\n            \"roles\": {\r\n                \"post\": \"capability-create\",\r\n                \"get\": \"capability-read\",\r\n                \"put\": \"capability-update\",\r\n                \"delete\": \"capability-delete\"\r\n            }\r\n        },\r\n        {\r\n            \"cls\": \"http://ont.enapso.com/foundation#Resource\",\r\n            \"roles\": {\r\n                \"post\": \"resource-create\",\r\n                \"get\": \"resource-read\",\r\n                \"put\": \"resource-update\",\r\n                \"delete\": \"resource-delete\"\r\n            }\r\n        }\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}{{namespace}}/v1/create-crud-endpoints-4-classes",
+									"host": [
+										"{{url}}{{namespace}}"
+									],
+									"path": [
+										"v1",
+										"create-crud-endpoints-4-classes"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Characteristics Management",
+					"item": [
+						{
+							"name": "Attribute Management",
+							"item": [
+								{
+									"name": "Create a new Attribute",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"type": "text",
+												"value": "application/json"
+											},
+											{
+												"key": "x-enapso-auth",
+												"value": "{{token}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n   \"cls\": \"http://ont.enapso.com/foundation#Height\",\r\n   \"parentClass\": \"http://ont.enapso.com/foundation#CompoundAttribute\",\r\n   \"label\": \"Heeight\",\r\n   \"comment\": \"specify the height of an resource\",\r\n   \"restriction\": [\r\n      {\r\n         \"prop\": \"http://ont.enapso.com/foundation#value\",\r\n         \"value\": \"100\"\r\n      }\r\n   ]\r\n}"
+										},
+										"url": {
+											"raw": "{{url}}{{namespace}}/v1/characteristics/Attribute",
+											"host": [
+												"{{url}}{{namespace}}"
+											],
+											"path": [
+												"v1",
+												"characteristics",
+												"Attribute"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Get Attributes",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Content-Type",
+												"type": "text",
+												"value": "application/json"
+											},
+											{
+												"key": "x-enapso-auth",
+												"value": "{{token}}",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "{{url}}{{namespace}}/v1/characteristics/Attribute?prefix=http://ont.enapso.com/foundation#",
+											"host": [
+												"{{url}}{{namespace}}"
+											],
+											"path": [
+												"v1",
+												"characteristics",
+												"Attribute"
+											],
+											"query": [
+												{
+													"key": "prefix",
+													"value": "http://ont.enapso.com/foundation"
+												}
+											],
+											"hash": ""
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Update existing Attribute",
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Content-Type",
+												"type": "text",
+												"value": "application/json"
+											},
+											{
+												"key": "x-enapso-auth",
+												"value": "{{token}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n   \"cls\": \"http://ont.enapso.com/foundation#Height\",\r\n   \"newIRI\": \"http://ont.enapso.com/foundation#Heeight\"\r\n}"
+										},
+										"url": {
+											"raw": "{{url}}{{namespace}}/v1/characteristics/Attribute",
+											"host": [
+												"{{url}}{{namespace}}"
+											],
+											"path": [
+												"v1",
+												"characteristics",
+												"Attribute"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Delete Attribute",
+									"request": {
+										"method": "DELETE",
+										"header": [
+											{
+												"key": "Content-Type",
+												"type": "text",
+												"value": "application/json"
+											},
+											{
+												"key": "x-enapso-auth",
+												"value": "{{token}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n   \"cls\": \"http://ont.enapso.com/foundation#Heeight\"\r\n}"
+										},
+										"url": {
+											"raw": "{{url}}{{namespace}}/v1/characteristics/Attribute?=",
+											"host": [
+												"{{url}}{{namespace}}"
+											],
+											"path": [
+												"v1",
+												"characteristics",
+												"Attribute"
+											],
+											"query": [
+												{
+													"key": "",
+													"value": ""
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							],
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"type": "text/javascript",
+										"exec": [
+											""
+										]
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"type": "text/javascript",
+										"exec": [
+											"pm.test(pm.info.requestName, ()=>{",
+											"",
+											"pm.response.to.be.success;",
+											"",
+											"",
+											"})",
+											""
+										]
+									}
+								}
+							]
+						},
+						{
+							"name": "Capability Management",
+							"item": [
+								{
+									"name": "Create a new Capability",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"type": "text",
+												"value": "application/json"
+											},
+											{
+												"key": "x-enapso-auth",
+												"value": "{{token}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n   \"cls\": \"http://ont.enapso.com/foundation#setHeeight\",\r\n   \"label\": \"set Height\",\r\n   \"comment\": \"set hieght of an resource\",\r\n   \"restriction\": [\r\n      {\r\n         \"prop\": \"http://ont.enapso.com/foundation#name\",\r\n         \"value\": \"set height\"\r\n      }\r\n   ]\r\n}"
+										},
+										"url": {
+											"raw": "{{url}}{{namespace}}/v1/characteristics/Capability",
+											"host": [
+												"{{url}}{{namespace}}"
+											],
+											"path": [
+												"v1",
+												"characteristics",
+												"Capability"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Get Capabilities",
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Content-Type",
+												"type": "text",
+												"value": "application/json"
+											},
+											{
+												"key": "x-enapso-auth",
+												"value": "{{token}}",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "{{url}}{{namespace}}/v1/characteristics/Capability?prefix=http://ont.enapso.com/foundation#",
+											"host": [
+												"{{url}}{{namespace}}"
+											],
+											"path": [
+												"v1",
+												"characteristics",
+												"Capability"
+											],
+											"query": [
+												{
+													"key": "prefix",
+													"value": "http://ont.enapso.com/foundation"
+												}
+											],
+											"hash": ""
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Update existing Capability",
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Content-Type",
+												"type": "text",
+												"value": "application/json"
+											},
+											{
+												"key": "x-enapso-auth",
+												"value": "{{token}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n   \"cls\": \"http://ont.enapso.com/foundation#setHeeight\",\r\n   \"newIRI\": \"http://ont.enapso.com/foundation#setHeight\"\r\n}"
+										},
+										"url": {
+											"raw": "{{url}}{{namespace}}/v1/characteristics/Capability",
+											"host": [
+												"{{url}}{{namespace}}"
+											],
+											"path": [
+												"v1",
+												"characteristics",
+												"Capability"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Delete Capability",
+									"request": {
+										"method": "DELETE",
+										"header": [
+											{
+												"key": "Content-Type",
+												"type": "text",
+												"value": "application/json"
+											},
+											{
+												"key": "x-enapso-auth",
+												"value": "{{token}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n   \"cls\": \"http://ont.enapso.com/foundation#setHeeight\",\r\n   \"newIRI\": \"http://ont.enapso.com/foundation#setHeight\"\r\n}"
+										},
+										"url": {
+											"raw": "{{url}}{{namespace}}/v1/characteristics/Capability",
+											"host": [
+												"{{url}}{{namespace}}"
+											],
+											"path": [
+												"v1",
+												"characteristics",
+												"Capability"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Resource Management",
+							"item": [
+								{
+									"name": "Create a new Resource",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"type": "text",
+												"value": "application/json"
+											},
+											{
+												"key": "x-enapso-auth",
+												"value": "{{token}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n   \"cls\": \"http://ont.enapso.com/foundation#TextArea\",\r\n   \"label\": \"TextArea\",\r\n   \"comment\": \"TextArea\",\r\n   \"restriction\": [\r\n      {\r\n         \"prop\": \"http://ont.enapso.com/foundation#hasAttributes\",\r\n         \"exactly\": \"http://ont.enapso.com/foundation#Color\",\r\n         \"cardinality\": 1\r\n      },\r\n      {\r\n         \"prop\": \"http://ont.enapso.com/foundation#hasCapabilities\",\r\n         \"exactly\": \"http://ont.enapso.com/foundation#setColor\",\r\n         \"cardinality\": 1\r\n      }\r\n   ]\r\n}"
+										},
+										"url": {
+											"raw": "{{url}}{{namespace}}/v1/characteristics/Resource?prefix=http://ont.enapso.com/foundation#",
+											"host": [
+												"{{url}}{{namespace}}"
+											],
+											"path": [
+												"v1",
+												"characteristics",
+												"Resource"
+											],
+											"query": [
+												{
+													"key": "prefix",
+													"value": "http://ont.enapso.com/foundation"
+												}
+											],
+											"hash": ""
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Get Resources",
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Content-Type",
+												"type": "text",
+												"value": "application/json"
+											},
+											{
+												"key": "x-enapso-auth",
+												"value": "{{token}}",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "{{url}}{{namespace}}/v1/characteristics/Resource",
+											"host": [
+												"{{url}}{{namespace}}"
+											],
+											"path": [
+												"v1",
+												"characteristics",
+												"Resource"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Update existing Resource",
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Content-Type",
+												"type": "text",
+												"value": "application/json"
+											},
+											{
+												"key": "x-enapso-auth",
+												"value": "{{token}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n   \"cls\": \"http://ont.enapso.com/foundation#TextArea\",\r\n   \"newIRI\": \"http://ont.enapso.com/foundation#TextAread\"\r\n}"
+										},
+										"url": {
+											"raw": "{{url}}{{namespace}}/v1/characteristics/Resource",
+											"host": [
+												"{{url}}{{namespace}}"
+											],
+											"path": [
+												"v1",
+												"characteristics",
+												"Resource"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Delete Resource",
+									"request": {
+										"method": "DELETE",
+										"header": [
+											{
+												"key": "Content-Type",
+												"type": "text",
+												"value": "application/json"
+											},
+											{
+												"key": "x-enapso-auth",
+												"value": "{{token}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"cls\": \"http://ont.enapso.com/foundation#TextAread\"\r\n}"
+										},
+										"url": {
+											"raw": "{{url}}{{namespace}}/v1/characteristics/Resource",
+											"host": [
+												"{{url}}{{namespace}}"
+											],
+											"path": [
+												"v1",
+												"characteristics",
+												"Resource"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(pm.info.requestName, ()=>{",
+									"",
+									"pm.response.to.be.success;",
+									"",
+									"",
+									"})",
+									""
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Instance Management",
+					"item": [
+						{
+							"name": "Truck Individual Management",
+							"item": [
+								{
+									"name": "Create new individual of Truck Class",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											},
+											{
+												"key": "x-enapso-auth",
+												"value": "{{token}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n   \"records\": [\r\n      {\r\n         \"licenceNumber\": \"B-BR 7895\"\r\n      }\r\n   ]\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{url}}{{namespace}}/v1/Truck",
+											"host": [
+												"{{url}}{{namespace}}"
+											],
+											"path": [
+												"v1",
+												"Truck"
+											],
+											"query": [
+												{
+													"key": "",
+													"value": "",
+													"disabled": true
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Get Individual of Truck Class",
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											},
+											{
+												"key": "x-enapso-auth",
+												"value": "{{token}}",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "{{url}}{{namespace}}/v1/Truck",
+											"host": [
+												"{{url}}{{namespace}}"
+											],
+											"path": [
+												"v1",
+												"Truck"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Update existing individual of Truck Class",
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											},
+											{
+												"key": "x-enapso-auth",
+												"value": "{{token}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n   \"records\": [\r\n      {\r\n         \"iri\": \"http://ont.enapso.com/dotnetpro#Truck_2609405f-e56d-4b5d-a226-a34f17e1c6f3\",\r\n         \"licenceNumber\": \"B-BR 0987\"\r\n      }\r\n   ]\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{url}}{{namespace}}/v1/Truck",
+											"host": [
+												"{{url}}{{namespace}}"
+											],
+											"path": [
+												"v1",
+												"Truck"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Delete existing individual of Truck Class",
+									"request": {
+										"method": "DELETE",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											},
+											{
+												"key": "x-enapso-auth",
+												"value": "{{token}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"records\": [\r\n        {\r\n            \"iri\": \"http://ont.enapso.com/dotnetpro#Truck_2609405f-e56d-4b5d-a226-a34f17e1c6f3\"\r\n        }\r\n    ]\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{url}}{{namespace}}/v1/Truck",
+											"host": [
+												"{{url}}{{namespace}}"
+											],
+											"path": [
+												"v1",
+												"Truck"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "Delete Endpoints",
+					"item": [
+						{
+							"name": "Delete Endpoint of individuals",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "x-enapso-auth",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n   \"cls\": \"http://ont.enapso.com/truck#Truck\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}{{namespace}}/v1/delete-crud-endpoints-of-Individuals",
+									"host": [
+										"{{url}}{{namespace}}"
+									],
+									"path": [
+										"v1",
+										"delete-crud-endpoints-of-Individuals"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Endpoint of Class",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "x-enapso-auth",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n   \"cls\": \"http://ont.enapso.com/foundation#Attribute\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}{{namespace}}/v1/delete-crud-endpoints-of-classes",
+									"host": [
+										"{{url}}{{namespace}}"
+									],
+									"path": [
+										"v1",
+										"delete-crud-endpoints-of-classes"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Generate Open API Specification",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-enapso-auth",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cls\": \"http://www.ebu.ch/metadata/ontologies/ebucore/ebucore#EditorialObject\",\r\n    \"lang\":\"en\",\r\n    \"annotation\":\"http://purl.org/dc/terms/description\",\r\n    \"swaggerInfo\": {\r\n        \"info\": {\r\n            \"title\": \"ENAPSO REST API\",\r\n            \"version\": \"1.0.0\",\r\n            \"description\": \"ENAPSO REST API to perform crud operation against uploaded rdf/owl file in GraphDB\",\r\n            \"license\": {\r\n                \"name\": \"Apache-2.0\",\r\n                \"url\": \"https://www.apache.org/licenses/LICENSE-2.0\"\r\n            }\r\n        },\r\n        \"host\": \"enapso.innotrade.com\",\r\n        \"schemes\": [\r\n            \"https\"\r\n        ],\r\n        \"basePath\": \"/api/enapso/objects/v1\",\r\n        \"swagger\": \"2.0\",\r\n        \"securityDefinitions\": {\r\n            \"ApiKeyAuth\": {\r\n                \"description\": \"\",\r\n                \"type\": \"apiKey\",\r\n                \"in\": \"header\",\r\n                \"name\": \"X-ENAPSO-AUTH\"\r\n            }\r\n        },\r\n        \"security\": [\r\n            {\r\n                \"ApiKeyAuth\": []\r\n            }\r\n        ]\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}{{namespace}}/v1/generate-open-api-specification",
+							"host": [
+								"{{url}}{{namespace}}"
+							],
+							"path": [
+								"v1",
+								"generate-open-api-specification"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create JavaScript Code",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"var jsonBody = JSON.parse(responseBody);\r",
+									"\r",
+									"console.log(jsonBody.javaScript[0]);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-enapso-auth",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cls\": \"http://www.ebu.ch/metadata/ontologies/ebucore/ebucore#EditorialObject\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}{{namespace}}/v1/create-javascript-classes",
+							"host": [
+								"{{url}}{{namespace}}"
+							],
+							"path": [
+								"v1",
+								"create-javascript-classes"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"if(pm.environment.get(\"ngnix\") == \"false\"){",
+							"pm.collectionVariables.set(\"namespace\", \":3005\");",
+							"",
+							"}else{",
+							"",
+							"    pm.collectionVariables.set(\"namespace\", \"/enapso-dev/api-assistant\");",
+							"",
+							"}",
+							"",
+							"",
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Individual Management Service",
+			"item": [
+				{
+					"name": "Read individual",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-enapso-auth",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cls\": \"http://www.ebu.ch/metadata/ontologies/ebucore/ebucore#Person\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}{{namespace}}/v1/read-individual",
+							"host": [
+								"{{url}}{{namespace}}"
+							],
+							"path": [
+								"v1",
+								"read-individual"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create an individual",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-enapso-auth",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"cls\": \"http://www.ebu.ch/metadata/ontologies/ebucore/ebucore#Person\",\r\n   \"records\": [\r\n      {\r\n         \"givenName\": \"Alexander\",\r\n         \"familyName\": \"Schulze\",\r\n         \"age\": 55\r\n\r\n      }\r\n   ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}{{namespace}}/v1/create-individual",
+							"host": [
+								"{{url}}{{namespace}}"
+							],
+							"path": [
+								"v1",
+								"create-individual"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update an existing individual",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-enapso-auth",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"cls\": \"http://ont.enapso.com/truck#Truck\",\r\n   \"records\": [\r\n      {\r\n         \"licenceNumber\": \"B-BR 589\",\r\n         \"iri\": \"http://ont.enapso.com/dotnetpro#Truck_04e79796-838b-4152-89bf-5e12efe7b38d\"\r\n      }\r\n   ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}{{namespace}}/v1/update-individual",
+							"host": [
+								"{{url}}{{namespace}}"
+							],
+							"path": [
+								"v1",
+								"update-individual"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create relation between two individuals",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-enapso-auth",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"child\": \"http://ont.enapso.com/truck#TransportationCompany5cfb2f42_500e_4856_9acb_80901669cb7f\",\r\n   \"parent\": \"http://ont.enapso.com/dotnetpro#Truck_04e79796-838b-4152-89bf-5e12efe7b38d\",\r\n   \"property\": \"http://ont.enapso.com/truck#hasOwner\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}{{namespace}}/v1/create-individual-relation",
+							"host": [
+								"{{url}}{{namespace}}"
+							],
+							"path": [
+								"v1",
+								"create-individual-relation"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete relation between two individuals",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-enapso-auth",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"child\": \"http://ont.enapso.com/truck#TransportationCompany5cfb2f42_500e_4856_9acb_80901669cb7f\",\r\n   \"parent\": \"http://ont.enapso.com/dotnetpro#Truck_04e79796-838b-4152-89bf-5e12efe7b38d\",\r\n   \"property\": \"http://ont.enapso.com/truck#hasOwner\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}{{namespace}}/v1/delete-individual-relation",
+							"host": [
+								"{{url}}{{namespace}}"
+							],
+							"path": [
+								"v1",
+								"delete-individual-relation"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete an existing individual",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-enapso-auth",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"cls\": \"http://www.ebu.ch/metadata/ontologies/ebucore/ebucore#Person\",\r\n   \"records\": [\r\n      {\r\n         \"iri\": \"http://ont.enapso.com/dotnetpro#Person_7b9e5986-c0a8-41a8-bcaa-c732f9ea1d38\"\r\n      }\r\n   ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}{{namespace}}/v1/delete-individual",
+							"host": [
+								"{{url}}{{namespace}}"
+							],
+							"path": [
+								"v1",
+								"delete-individual"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"if(pm.environment.get(\"ngnix\") == \"false\"){",
+							"pm.collectionVariables.set(\"namespace\", \":3001\");",
+							"}else{",
+							"    pm.collectionVariables.set(\"namespace\", \"/enapso-dev/individual-management\");",
+							"",
+							"}",
+							"",
+							"",
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Ontology Management Service",
+			"item": [
+				{
+					"name": "Create Class And Add Restriction",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-enapso-auth",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"parent\": \"http://ont.enapso.com/foundation#Resource\",\r\n   \"cls\": \"http://ont.enapso.com/foundation#TextArea\",\r\n   \"label\": \"TextArea\",\r\n   \"comment\": \"TextArea\",\r\n   \"restriction\": [\r\n      {\r\n         \"prop\": \"http://ont.enapso.com/foundation#hasCapabilities\",\r\n         \"only\": \"http://ont.enapso.com/foundation#setColor\"\r\n      }\r\n   ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}{{namespace}}/v1/create-class-with-restrictions",
+							"host": [
+								"{{url}}{{namespace}}"
+							],
+							"path": [
+								"v1",
+								"create-class-with-restrictions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Class Restrictions",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-enapso-auth",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cls\": \"http://ont.enapso.com/foundation#TextArea\",\r\n    \"restriction\": [\r\n        {\r\n            \"prop\": \"http://ont.enapso.com/foundation#scope\",\r\n            \"exactly\": \"xsd:string\",\r\n            \"cardinality\": 1\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}{{namespace}}/v1/add-class-restrictions",
+							"host": [
+								"{{url}}{{namespace}}"
+							],
+							"path": [
+								"v1",
+								"add-class-restrictions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Class Restriction",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-enapso-auth",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cls\": \"http://ont.enapso.com/foundation#TextArea\",\r\n    \"restriction\": [\r\n        {\r\n            \"prop\": \"http://ont.enapso.com/foundation#scope\",\r\n            \"previousRestriction\": {\r\n                \"exactly\": \"xsd:string\",\r\n                \"cardinality\": 1\r\n            },\r\n            \"updateRestriction\": {\r\n                \"max\": \"xsd:string\",\r\n                \"cardinality\": \"2\"\r\n            }\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}{{namespace}}/v1/update-class-restriction",
+							"host": [
+								"{{url}}{{namespace}}"
+							],
+							"path": [
+								"v1",
+								"update-class-restriction"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Class Restrictions",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-enapso-auth",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cls\": \"http://ont.enapso.com/foundation#TextArea\",\r\n    \"restriction\": [\r\n        {\r\n            \"prop\": \"http://ont.enapso.com/foundation#scope\",\r\n            \"max\": \"xsd:string\",\r\n            \"cardinality\": \"2\"\r\n        },\r\n        {\r\n            \"prop\": \"http://ont.enapso.com/foundation#hasCapabilities\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}{{namespace}}/v1/delete-class-restrictions",
+							"host": [
+								"{{url}}{{namespace}}"
+							],
+							"path": [
+								"v1",
+								"delete-class-restrictions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Label",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-enapso-auth",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"name\": \"http://ont.enapso.com/foundation#TextArea\",\r\n   \"label\": \"TextArea\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}{{namespace}}/v1/add-label",
+							"host": [
+								"{{url}}{{namespace}}"
+							],
+							"path": [
+								"v1",
+								"add-label"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Change Label",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-enapso-auth",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"name\": \"http://ont.enapso.com/foundation#TextArea\",\r\n   \"oldLabel\":\"TextArea\",\r\n   \"label\": \"TextArea56\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}{{namespace}}/v1/change-label",
+							"host": [
+								"{{url}}{{namespace}}"
+							],
+							"path": [
+								"v1",
+								"change-label"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Remove Label",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-enapso-auth",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"name\": \"http://ont.enapso.com/foundation#TextArea\",\r\n   \"label\": \"TextArea56\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}{{namespace}}/v1/remove-label",
+							"host": [
+								"{{url}}{{namespace}}"
+							],
+							"path": [
+								"v1",
+								"remove-label"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Comment",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-enapso-auth",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"name\": \"http://ont.enapso.com/foundation#TextArea\",\r\n   \"comment\": \"TextArea of a control\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}{{namespace}}/v1/add-comment",
+							"host": [
+								"{{url}}{{namespace}}"
+							],
+							"path": [
+								"v1",
+								"add-comment"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Change Comment",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-enapso-auth",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"name\": \"http://ont.enapso.com/foundation#TextArea\",\r\n   \"oldComment\":\"TextArea of a control\",\r\n   \"comment\": \"TextArea of a ENAPSO control\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}{{namespace}}/v1/change-comment",
+							"host": [
+								"{{url}}{{namespace}}"
+							],
+							"path": [
+								"v1",
+								"change-comment"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Remove Comment",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-enapso-auth",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"name\": \"http://ont.enapso.com/foundation#TextArea\",\r\n   \"comment\": \"TextArea of a ENAPSO control\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}{{namespace}}/v1/remove-comment",
+							"host": [
+								"{{url}}{{namespace}}"
+							],
+							"path": [
+								"v1",
+								"remove-comment"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Annotation",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-enapso-auth",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"annotation\":\"comment\",\r\n   \"name\": \"http://ont.enapso.com/foundation#TextArea\",\r\n   \"value\": \"TextArea of a control\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}{{namespace}}/v1/add-annotation",
+							"host": [
+								"{{url}}{{namespace}}"
+							],
+							"path": [
+								"v1",
+								"add-annotation"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Change Annotation",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-enapso-auth",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"annotation\": \"comment\",\r\n    \"name\": \"http://ont.enapso.com/foundation#TextArea\",\r\n    \"oldValue\": \"TextArea of a control\",\r\n    \"value\": \"TextArea of a ENAPSO control\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}{{namespace}}/v1/change-annotation",
+							"host": [
+								"{{url}}{{namespace}}"
+							],
+							"path": [
+								"v1",
+								"change-annotation"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Remove Annotation",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-enapso-auth",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"annotation\": \"comment\",\r\n    \"name\": \"http://ont.enapso.com/foundation#TextArea\",\r\n    \"value\": \"TextArea of a ENAPSO control\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}{{namespace}}/v1/remove-annotation",
+							"host": [
+								"{{url}}{{namespace}}"
+							],
+							"path": [
+								"v1",
+								"remove-annotation"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Annotation",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-enapso-auth",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"name\": \"http://ont.enapso.com/foundation#TextArea\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}{{namespace}}/v1/get-annotation",
+							"host": [
+								"{{url}}{{namespace}}"
+							],
+							"path": [
+								"v1",
+								"get-annotation"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Class Model",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-enapso-auth",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cls\": \"http://ont.enapso.com/foundation#TextArea\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}{{namespace}}/v1/delete-class-model",
+							"host": [
+								"{{url}}{{namespace}}"
+							],
+							"path": [
+								"v1",
+								"delete-class-model"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Class Individuals",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-enapso-auth",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cls\": \"http://ont.enapso.com/foundation#TextArea\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}{{namespace}}/v1/delete-class-individuals",
+							"host": [
+								"{{url}}{{namespace}}"
+							],
+							"path": [
+								"v1",
+								"delete-class-individuals"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Class Model and Individuals",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-enapso-auth",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cls\": \"http://ont.enapso.com/foundation#TextArea\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}{{namespace}}/v1/delete-class-model-and-individuals",
+							"host": [
+								"{{url}}{{namespace}}"
+							],
+							"path": [
+								"v1",
+								"delete-class-model-and-individuals"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Referenced Class Model",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-enapso-auth",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cls\": \"http://ont.enapso.com/foundation#TextArea\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}{{namespace}}/v1/delete-referenced-class-model",
+							"host": [
+								"{{url}}{{namespace}}"
+							],
+							"path": [
+								"v1",
+								"delete-referenced-class-model"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Referenced Class Individuals",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-enapso-auth",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cls\": \"http://ont.enapso.com/foundation#TextArea\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}{{namespace}}/v1/delete-referenced-class-individuals",
+							"host": [
+								"{{url}}{{namespace}}"
+							],
+							"path": [
+								"v1",
+								"delete-referenced-class-individuals"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Referenced Class Model and Individuals",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-enapso-auth",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cls\": \"http://ont.enapso.com/foundation#TextArea\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}{{namespace}}/v1/delete-referenced-class-model-and-individuals",
+							"host": [
+								"{{url}}{{namespace}}"
+							],
+							"path": [
+								"v1",
+								"delete-referenced-class-model-and-individuals"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Class IRI",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-enapso-auth",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"newIRI\": \"http://ont.enapso.com/foundation#TextArea12\",\r\n   \"cls\": \"http://ont.enapso.com/foundation#TextArea\",\r\n   \"parent\": \"http://ont.enapso.com/foundation#Resource\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}{{namespace}}/v1/change-class-iri",
+							"host": [
+								"{{url}}{{namespace}}"
+							],
+							"path": [
+								"v1",
+								"change-class-iri"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Class",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-enapso-auth",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cls\": \"http://ont.enapso.com/foundation#TextArea12\",\r\n    \"parent\": \"http://ont.enapso.com/foundation#Resource\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}{{namespace}}/v1/delete-class",
+							"host": [
+								"{{url}}{{namespace}}"
+							],
+							"path": [
+								"v1",
+								"delete-class"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Data Property",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-enapso-auth",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"parent\": \"http://ont.enapso.com/truck#name\",\r\n   \"prop\": \"http://ont.enapso.com/truck#firstName\",\r\n   \"label\": \"First Name\",\r\n   \"comment\": \"First Name of the driver\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}{{namespace}}/v1/create-data-property",
+							"host": [
+								"{{url}}{{namespace}}"
+							],
+							"path": [
+								"v1",
+								"create-data-property"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Data Properties",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-enapso-auth",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"prop\": \"http://ont.enapso.com/truck#firstName\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}{{namespace}}/v1/get-data-properties",
+							"host": [
+								"{{url}}{{namespace}}"
+							],
+							"path": [
+								"v1",
+								"get-data-properties"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Object Property",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-enapso-auth",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"parent\": \"http://ont.enapso.com/foundation#include\",\r\n   \"prop\": \"http://ont.enapso.com/foundation#hasInclude\",\r\n   \"label\": \"First Name\",\r\n   \"comment\": \"First Name of the driver\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}{{namespace}}/v1/create-object-property",
+							"host": [
+								"{{url}}{{namespace}}"
+							],
+							"path": [
+								"v1",
+								"create-object-property"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Object Properties",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-enapso-auth",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"prop\": \"http://ont.enapso.com/foundation#include\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}{{namespace}}/v1/get-object-properties",
+							"host": [
+								"{{url}}{{namespace}}"
+							],
+							"path": [
+								"v1",
+								"get-object-properties"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Property IRI",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-enapso-auth",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"newIRI\": \"http://ont.enapso.com/foundation#hasNotInclude\",\r\n   \"prop\": \"http://ont.enapso.com/foundation#hasInclude\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}{{namespace}}/v1/update-property-iri",
+							"host": [
+								"{{url}}{{namespace}}"
+							],
+							"path": [
+								"v1",
+								"update-property-iri"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Property From Restrictions",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-enapso-auth",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"prop\": \"http://ont.enapso.com/foundation#hasNotInclude\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}{{namespace}}/v1/delete-property-from-restrictions",
+							"host": [
+								"{{url}}{{namespace}}"
+							],
+							"path": [
+								"v1",
+								"delete-property-from-restrictions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Property From Individuals",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-enapso-auth",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"prop\": \"http://ont.enapso.com/foundation#hasNotInclude\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}{{namespace}}/v1/delete-property-from-individuals",
+							"host": [
+								"{{url}}{{namespace}}"
+							],
+							"path": [
+								"v1",
+								"delete-property-from-individuals"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Property",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-enapso-auth",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"prop\": \"http://ont.enapso.com/foundation#hasNotInclude\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}{{namespace}}/v1/delete-property",
+							"host": [
+								"{{url}}{{namespace}}"
+							],
+							"path": [
+								"v1",
+								"delete-property"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All SubClass of a class",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-enapso-auth",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"parent\": \"http://ont.enapso.com/foundation#Attribute\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}{{namespace}}/v1/get-sub-classes",
+							"host": [
+								"{{url}}{{namespace}}"
+							],
+							"path": [
+								"v1",
+								"get-sub-classes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Class Properties",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-enapso-auth",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"cls\": \"http://ont.enapso.com/foundation#TextArea\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}{{namespace}}/v1/get-class-properties",
+							"host": [
+								"{{url}}{{namespace}}"
+							],
+							"path": [
+								"v1",
+								"get-class-properties"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Full Prefix To IRI",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-enapso-auth",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"cls\": \"http://ont.enapso.com/foundation#TextArea\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}{{namespace}}/v1/get-full-prefix-to-iri",
+							"host": [
+								"{{url}}{{namespace}}"
+							],
+							"path": [
+								"v1",
+								"get-full-prefix-to-iri"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Classes Data",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-enapso-auth",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"cls\": [\"http://ont.enapso.com/foundation#TextArea\"]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}{{namespace}}/v1/get-all-classes-data",
+							"host": [
+								"{{url}}{{namespace}}"
+							],
+							"path": [
+								"v1",
+								"get-all-classes-data"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Classes",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-enapso-auth",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"graph\":\"http://www.ebu.ch/metadata/ontologies/ebucore\"\r\n}"
+						},
+						"url": {
+							"raw": "{{url}}{{namespace}}/v1/get-all-classes",
+							"host": [
+								"{{url}}{{namespace}}"
+							],
+							"path": [
+								"v1",
+								"get-all-classes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Classes Description",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-enapso-auth",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"graph\":\"http://www.ebu.ch/metadata/ontologies/ebucore\"\r\n}"
+						},
+						"url": {
+							"raw": "{{url}}{{namespace}}/v1/get-classes-description",
+							"host": [
+								"{{url}}{{namespace}}"
+							],
+							"path": [
+								"v1",
+								"get-classes-description"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Parent Classes",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-enapso-auth",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"cls\": \"http://ont.enapso.com/foundation#CompoundAttribute\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}{{namespace}}/v1/get-parent-classes",
+							"host": [
+								"{{url}}{{namespace}}"
+							],
+							"path": [
+								"v1",
+								"get-parent-classes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Class properties By domain",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-enapso-auth",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"cls\": \"http://ont.enapso.com/truck#Truck\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}{{namespace}}/v1/get-class-properties-by-domain",
+							"host": [
+								"{{url}}{{namespace}}"
+							],
+							"path": [
+								"v1",
+								"get-class-properties-by-domain"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Properties",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-enapso-auth",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}{{namespace}}/v1/get-all-properties",
+							"host": [
+								"{{url}}{{namespace}}"
+							],
+							"path": [
+								"v1",
+								"get-all-properties"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Class own properties",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-enapso-auth",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"cls\": \"http://ont.enapso.com/truck#GeoLocation\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}{{namespace}}/v1/get-class-own-properties",
+							"host": [
+								"{{url}}{{namespace}}"
+							],
+							"path": [
+								"v1",
+								"get-class-own-properties"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"if(pm.environment.get(\"ngnix\") == \"false\"){",
+							"pm.collectionVariables.set(\"namespace\", \":3002\");",
+							"",
+							"console.log(\"here in true\")",
+							"}else{",
+							"",
+							"    pm.collectionVariables.set(\"namespace\", \"/enapso-dev/ontology-management\");",
+							"",
+							"}",
+							"",
+							"",
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Cache Management Service",
+			"item": [
+				{
+					"name": "Build Class Cache",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-enapso-auth",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}{{namespace}}/v1/build-class-cache",
+							"host": [
+								"{{url}}{{namespace}}"
+							],
+							"path": [
+								"v1",
+								"build-class-cache"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Read Class Cache",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-enapso-auth",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}{{namespace}}/v1/read-class-cache",
+							"host": [
+								"{{url}}{{namespace}}"
+							],
+							"path": [
+								"v1",
+								"read-class-cache"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"if(pm.environment.get(\"ngnix\") == \"false\"){",
+							"pm.collectionVariables.set(\"namespace\", \":3000\");",
+							"",
+							"console.log(\"here in true\")",
+							"}else{",
+							"",
+							"    pm.collectionVariables.set(\"namespace\", \"/enapso-dev/cache-management\");",
+							"",
+							"}",
+							"",
+							"",
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "SPARQL Assistant Service",
+			"item": [
+				{
+					"name": "SPARQL 4 read individual",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"var jsonBody = JSON.parse(responseBody);",
+									"",
+									"console.log(jsonBody.query);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-enapso-auth",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n       \"cls\": \"http://www.ebu.ch/metadata/ontologies/ebucore/ebucore#Person\"\r\n\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}{{namespace}}/v1/sparql-4-read-individual",
+							"host": [
+								"{{url}}{{namespace}}"
+							],
+							"path": [
+								"v1",
+								"sparql-4-read-individual"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "SPARQL 4 create an individual",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-enapso-auth",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"cls\": \"http://www.ebu.ch/metadata/ontologies/ebucore/ebucore#Person\",\r\n   \"records\": [\r\n      {\r\n         \"givenName\": \"Alexander\",\r\n         \"familyName\": \"Schulze\",\r\n         \"age\": 55\r\n\r\n      }\r\n   ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}{{namespace}}/v1/sparql-4-create-individual",
+							"host": [
+								"{{url}}{{namespace}}"
+							],
+							"path": [
+								"v1",
+								"sparql-4-create-individual"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "SAPRQL 4 update an existing individual",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-enapso-auth",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"cls\": \"http://ont.enapso.com/truck#Truck\",\r\n   \"records\": [\r\n      {\r\n         \"licenceNumber\": \"B-BR 589\",\r\n         \"iri\": \"http://ont.enapso.com/dotnetpro#Truck_04e79796-838b-4152-89bf-5e12efe7b38d\"\r\n      }\r\n   ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}{{namespace}}/v1/sparql-4-update-individual",
+							"host": [
+								"{{url}}{{namespace}}"
+							],
+							"path": [
+								"v1",
+								"sparql-4-update-individual"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "SPARQL 4 delete an existing individual",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-enapso-auth",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"cls\": \"http://www.ebu.ch/metadata/ontologies/ebucore/ebucore#Person\",\r\n   \"records\": [\r\n      {\r\n         \"iri\": \"http://ont.enapso.com/dotnetpro#Person_7b9e5986-c0a8-41a8-bcaa-c732f9ea1d38\"\r\n      }\r\n   ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}{{namespace}}/v1/sparql-4-delete-individual",
+							"host": [
+								"{{url}}{{namespace}}"
+							],
+							"path": [
+								"v1",
+								"sparql-4-delete-individual"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"if(pm.environment.get(\"ngnix\") == \"false\"){",
+							"pm.collectionVariables.set(\"namespace\", \":3003\");",
+							"}else{",
+							"",
+							"    pm.collectionVariables.set(\"namespace\", \"/enapso-dev/sparql-assistant\");",
+							"",
+							"}"
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"pm.test(pm.info.requestName, ()=>{",
+					"",
+					"pm.response.to.be.success;",
+					"",
+					"",
+					"})",
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "new_tenant",
+			"value": ""
+		},
+		{
+			"key": "namespace",
+			"value": ""
+		},
+		{
+			"key": "loginURL",
+			"value": ""
+		}
+	]
+}

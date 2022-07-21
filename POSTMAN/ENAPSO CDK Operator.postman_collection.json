@@ -1,0 +1,303 @@
+{
+	"info": {
+		"_postman_id": "956de85f-1e11-46dd-a222-85580d03f786",
+		"name": "ENAPSO CDK Operator",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "7183002"
+	},
+	"item": [
+		{
+			"name": "Tenant Management Service",
+			"item": [
+				{
+					"name": "Register Tenant",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"\r",
+									"var jsonData = JSON.parse(responseBody);\r",
+									"\r",
+									"\r",
+									"pm.collectionVariables.set(\"new_tenant\", jsonData.message[\"tenantName\"]);\r",
+									"\r",
+									"console.log(jsonData.message[\"tenantName\"]);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.collectionVariables.set(\"test_email\", \"test@testing.com\");\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"customerName\": \"swr-de\",\r\n    \"tenantDisplayName\": \"SWR \",\r\n    \"email\": \"{{test_email}}\",\r\n    \"suffix\": \"prod\"\r\n  \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}{{namespace}}/v1/register-tenant",
+							"host": [
+								"{{url}}{{namespace}}"
+							],
+							"path": [
+								"v1",
+								"register-tenant"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Unregister Tenant",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"console.log(pm.collectionVariables.get(\"new_tenant\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"tenantName\": \"{{new_tenant}}\",\r\n    \"tenantUsername\": \"{{test_email}}\",\r\n    \"tenantPassword\": \"temporarypassword\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}{{namespace}}/v1/unregister-tenant",
+							"host": [
+								"{{url}}{{namespace}}"
+							],
+							"path": [
+								"v1",
+								"unregister-tenant"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register Customer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"customerName\": \"sem42-de\",\r\n    \"maxNoOfTenants\": \"3\",\r\n    \"operatorUsername\": \"admin\",\r\n    \"operatorPassword\": \"admin\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}{{namespace}}/v1/register-customer",
+							"host": [
+								"{{url}}{{namespace}}"
+							],
+							"path": [
+								"v1",
+								"register-customer"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Unregister Customer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"customerName\": \"swr-de\",\r\n    \"operatorUsername\": \"admin\",\r\n    \"operatorPassword\": \"admin\", \r\n    \"autoUnregisterAllTenants\": \"true\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}{{namespace}}/v1/unregister-customer",
+							"host": [
+								"{{url}}{{namespace}}"
+							],
+							"path": [
+								"v1",
+								"unregister-customer"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"if(pm.environment.get(\"ngnix\") == \"false\"){",
+							"pm.collectionVariables.set(\"namespace\", \":3004\");",
+							"pm.collectionVariables.set(\"loginURL\", pm.environment.get(\"url\")+\":8080\");",
+							"",
+							"if(pm.environment.name == \"Test\"){",
+							"",
+							"    pm.collectionVariables.set(\"loginURL\", \"http://185.233.188.93:32057\");",
+							"",
+							"}",
+							"",
+							"}else{",
+							"",
+							"    pm.collectionVariables.set(\"namespace\", \"/enapso-dev/tenant-management\");",
+							"        pm.collectionVariables.set(\"loginURL\", pm.environment.get(\"url\"));",
+							"",
+							"}",
+							"",
+							"",
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(pm.info.requestName, ()=>{",
+							"",
+							"pm.response.to.be.success;",
+							"",
+							"",
+							"})",
+							""
+						]
+					}
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"pm.test(pm.info.requestName, ()=>{",
+					"",
+					"pm.response.to.be.success;",
+					"",
+					"",
+					"})",
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "namespace",
+			"value": ""
+		},
+		{
+			"key": "new_tenant",
+			"value": ""
+		},
+		{
+			"key": "test-email",
+			"value": ""
+		},
+		{
+			"key": "loginURL",
+			"value": ""
+		},
+		{
+			"key": "test_email",
+			"value": ""
+		}
+	]
+}
