@@ -15,3 +15,4 @@ services:
         - isolated-network
         environment:
         - URL=https://ebu-cdk.innotrade.com
+        - TENANT=Demo-UUID

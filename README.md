@@ -44,7 +44,7 @@ In the hybrid installation, the user would have their own Jupyter lab environmen
 To install the hybrid version we will go to the terminal in the coreplus-demo directory and run this command.
 
 ```bash
-docker-compose -d docker-compose-hybrid up -d 
+docker-compose -f .\docker-compose-hybrid.yml up -d
 ```
 
 The CDK would be available on the browser at [http://localhost:8888](http://localhost:8888)
@@ -59,7 +59,7 @@ In the local installation, the user would get both the frontend and the backend 
 To install the hybrid version we will go to the terminal in the coreplus-demo directory and run this command.
 
 ```bash
-docker-compose -d docker-compose-local up -d 
+docker-compose -f .\docker-compose-local.yml up -d
 ```
 
 The CDK would be available on the browser at [http://localhost:8888](http://localhost:8888)

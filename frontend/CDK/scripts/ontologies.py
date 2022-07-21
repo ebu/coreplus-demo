@@ -6,7 +6,7 @@ import pandas as pd
 from .config import *
 from itables import show
 from pyvis.network import Network
-
+import os
 
 def __flatten__(data, parent={}):
 

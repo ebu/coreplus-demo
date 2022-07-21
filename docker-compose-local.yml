@@ -230,3 +230,4 @@ services:
         - "host.docker.internal:host-gateway"
         environment:
         - URL=http://host.docker.internal
+        - TENANT=Demo-Tenant
