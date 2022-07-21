@@ -101,3 +101,5 @@ ENV/
 
 #htmls
 *.html
+
+.DS_Store
