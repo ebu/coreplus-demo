@@ -1,0 +1,23 @@
+{
+	"host": "ebu-cdk.innotrade.com",
+	"schemes": "https",
+	"security": {
+		"authentication": "keycloak",
+		"authorization": "keycloak"
+	},
+	"graphdb": {
+		"cache": "self",
+		"dbUrl": "http://graphdb:7200",
+		"schema": "Test",
+		"user": "admin",
+		"pass": "root"
+	},
+	"keycloak": {
+		"host": "http://keycloak:8080"
+	},
+	"redis": {
+		"host": "localhost",
+		"port": "6379",
+		"password": "CaVttOERn5"
+	}
+}

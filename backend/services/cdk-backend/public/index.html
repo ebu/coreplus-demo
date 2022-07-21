@@ -1,0 +1,81 @@
+<html>
+<head>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+
+    <script src="keycloak.js"></script>
+
+
+    <script>
+
+
+function start(){
+
+
+    debugger; 
+    
+    let path = window.location.pathname;
+let str =  path.split("/")
+
+
+let realm = str[str.length -1]
+if(realm == "" || realm == "cdk-backend"){
+location.href = '/enapso-dev/cdk-backend/documentation/index.html';
+}
+   return  initKeycloak(realm)
+}
+
+
+    function initKeycloak(realm) {
+
+        let host = window.location.protocol + "//" + window.location.host;
+
+    const keycloak = new Keycloak({
+    url: `${host}/auth` ,
+    realm: realm,
+    clientId: 'swagger',
+});
+
+
+
+
+
+const redirect = function () {
+
+    var client = new XMLHttpRequest();
+    client.open("POST", "/log");
+    client.setRequestHeader('X-ENAPSO-AUTH', keycloak.token);
+
+
+    // debugger;
+//    sendAjax(); 
+
+    location.href = `${host}/enapso-dev/cdk-backend/v1/api-docs?token=${keycloak.token}`;    
+//    location.href = `http://localhost:3007/v1/api-docs?token=${keycloak.token}`;
+    // window.location.replace("http://stackoverflow.com");
+
+}
+
+keycloak.init({ onLoad: 'login-required' }).then(function(authenticated) {
+
+    if(authenticated){
+        debugger;
+        redirect();
+    }
+                   // alert(authenticated ? 'authenticated' : 'not authenticated');
+                }).catch(function(err) {
+debugger;
+                    console.log(err)
+                    alert('failed to initialize');
+                });  
+        }
+
+
+  
+    </script>
+</head>
+<body onload="start()">
+    <!-- your page content goes here -->
+</body>
+</html>

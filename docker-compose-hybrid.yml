@@ -1,0 +1,17 @@
+version: '3'
+networks:
+    isolated-network:
+        driver: bridge
+services:
+  jupyter-lab:
+        container_name: jupyter-lab
+        build:
+            context: ./frontend
+            dockerfile: Dockerfile
+        image: enapso/jupyter-lab
+        ports:
+            - "8888:8888"
+        networks:
+        - isolated-network
+        environment:
+        - URL=https://ebu-cdk.innotrade.com

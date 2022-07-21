@@ -1,0 +1,232 @@
+version: '3'
+networks:
+  isolated-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
+
+services:
+  redis-master:
+    container_name: redis-master
+    image: redis
+    volumes:
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
+    command: redis-server /usr/local/etc/redis/redis.conf
+    networks:
+      - isolated-network
+    ports:
+      - 6379:6379
+  postgres:
+    image: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: password
+    networks:
+      - isolated-network
+  keycloak:
+    container_name: keycloak
+    image: jboss/keycloak:latest
+    networks:
+      - isolated-network
+    volumes:
+      - ./backend/keycloak:/opt/jboss/keycloak/imports
+    environment:
+      KEYCLOAK_IMPORT: /opt/jboss/keycloak/imports/Demo-Tenant.json -Dkeycloak.profile.feature.upload_scripts=enabled
+      DB_VENDOR: POSTGRES
+      DB_ADDR: postgres
+      DB_DATABASE: keycloak
+      DB_USER: keycloak
+      DB_SCHEMA: public
+      DB_PASSWORD: password
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: admin
+      PROXY_ADDRESS_FORWARDING: "true" #important for reverse proxy
+    ports:
+      - 8080:8080
+      - 8443:8443
+    depends_on:
+      - postgres
+  graphdb:
+    container_name: graphdb
+    build:
+      context: ./backend/graphdb
+      dockerfile: Dockerfile
+    image: enapso/graphdb
+    environment:
+      - GDB_HEAP_SIZE=4G
+    restart: always
+    ports:
+      - "7200:7200"
+    networks:
+      - isolated-network
+  cache-managment-service:
+    container_name: cms
+    image: enapso/cache-managment-service
+    build:
+      context: ./backend/services/cache-management
+      dockerfile: Dockerfile
+    volumes:
+      - ./backend/services/cache-management:/app/services/cache-management:ro
+    ports:
+      - 3000:3000
+    depends_on:
+      - graphdb
+      - keycloak
+      - redis-master
+    links:
+      - keycloak
+      - redis-master
+    networks:
+      - isolated-network
+  individual-managment-service:
+    container_name: ims
+    image: enapso/individual-managment-service
+    build:
+      context: ./backend/services/individual-management
+      dockerfile: Dockerfile
+    volumes:
+      - ./backend/services/individual-management:/app/services/individual-management:ro
+    ports:
+      - 3001:3001
+    depends_on:
+      - graphdb
+      - keycloak
+      - redis-master
+    networks:
+      - isolated-network
+  sparql-assistant-service:
+    container_name: sas
+    image: enapso/sparql-assistant-service
+    build:
+      context: ./backend/services/sparql-assistant
+      dockerfile: Dockerfile
+    volumes:
+      - ./backend/services/sparql-assistant:/app/services/sparql-assistant:ro
+    ports:
+      - 3003:3003
+    depends_on:
+      - graphdb
+      - keycloak
+      - redis-master
+    networks:
+      - isolated-network
+  ontology-management-service:
+    container_name: oms
+    image: enapso/ontology-management-service
+    build:
+      context: ./backend/services/ontology-management
+      dockerfile: Dockerfile
+    volumes:
+      - ./backend/services/ontology-management:/app/services/ontology-management:ro
+    ports:
+      - 3002:3002
+    depends_on:
+      - graphdb
+      - keycloak
+      - redis-master
+    networks:
+      - isolated-network
+  tenant-management-service:
+    container_name: tms
+    image: enapso/tenant-management-service
+    build:
+      context: ./backend/services/tenant-management
+      dockerfile: Dockerfile
+    volumes:
+      - ./backend/services/tenant-management:/app/services/tenant-management:ro
+    ports:
+      - 3004:3004
+    depends_on:
+      - graphdb
+      - keycloak
+      - redis-master
+    networks:
+      - isolated-network
+  api-assistant-service:
+    container_name: ass
+    image: enapso/api-assistant-service
+    build:
+      context: ./backend/services/api-assistant
+      dockerfile: Dockerfile
+    volumes:
+      - ./backend/services/api-assistant:/app/services/api-assistant:ro
+    ports:
+      - 3005:3005
+    depends_on:
+      - graphdb
+      - keycloak
+      - redis-master
+    networks:
+      - isolated-network
+  graphdb-management-service:
+    container_name: gms
+    image: enapso/graphdb-management-service
+    build:
+      context: ./backend/services/graphdb-management
+      dockerfile: Dockerfile
+    volumes:
+      - ./backend/services/graphdb-management:/app/services/graphdb-management:ro
+    ports:
+      - 3006:3006
+    depends_on:
+      - graphdb
+      - keycloak
+      - redis-master
+    networks:
+      - isolated-network
+  cdk-backend-service:
+    container_name: cbs
+    image: enapso/cdk-backend-service
+    build:
+      context: ./backend/services/cdk-backend
+      dockerfile: Dockerfile
+    volumes:
+      - ./backend/services/cdk-backend:/app/services/cdk-backend:rw
+    ports:
+      - 3007:3007
+    depends_on:
+      - graphdb
+      - keycloak
+      - redis-master
+    networks:
+      - isolated-network
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    volumes:
+      - ./backend/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./backend/data/certbot/conf:/etc/letsencrypt
+      - ./backend/data/certbot/www:/var/www/certbot
+    networks:
+      - isolated-network
+    ports:
+      - 80:80
+      - 443:443
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+  certbot:
+    image: certbot/certbot
+    restart: unless-stopped
+    volumes:
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+  jupyter-lab:
+        container_name: jupyter-lab
+        build:
+            context: ./frontend
+            dockerfile: Dockerfile
+        image: enapso/jupyter-lab
+        ports:
+            - "8888:8888"
+        networks:
+        - isolated-network
+        extra_hosts:
+        - "host.docker.internal:host-gateway"
+        environment:
+        - URL=http://host.docker.internal

@@ -1,0 +1,16 @@
+{
+	"scheme": "https",
+	"host": "ebu-cdk.innotrade.com",
+	"graphdb": {
+		"dbUrl": "http://graphdb:7200",
+		"schema": "Test",
+		"user": "admin",
+		"pass": "root"
+	},
+
+	"keycloak": {
+		"host": "http://keycloak:8080",
+		"username": "product-owner",
+		"password": "RWZWIqjzJ4XiwqaYtiBfFoE"
+	}
+}
