@@ -60,7 +60,7 @@ docker-compose -f .\docker-compose-hybrid.yml down
  
 In the local installation, the user would get both the frontend and the backend running n their local instance which they could use locally on their machine.
 
-### Intallation
+### Installation
 
 To install the hybrid version we will go to the terminal in the coreplus-demo directory and run this command.
 
