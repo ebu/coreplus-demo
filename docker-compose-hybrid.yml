@@ -14,5 +14,5 @@ services:
         networks:
         - isolated-network
         environment:
-        - URL=https://ebu-cdk.innotrade.com
-        - TENANT=Demo-UUID
+        - URL=https://ebucore-plus-dk.org
+        - TENANT=Demo-Tenant
