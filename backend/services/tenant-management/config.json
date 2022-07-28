@@ -10,7 +10,7 @@
 
 	"keycloak": {
 		"host": "http://keycloak:8080",
-		"username": "product-owner",
-		"password": "RWZWIqjzJ4XiwqaYtiBfFoE"
+		"username": "admin",
+		"password": "admin"
 	}
 }
