@@ -1,6 +1,6 @@
 {
 	"scheme": "https",
-	"host": "ebu-cdk.innotrade.com",
+	"host": "ebucore-plus-dk.org",
 	"graphdb": {
 		"dbUrl": "http://graphdb:7200",
 		"schema": "Test",

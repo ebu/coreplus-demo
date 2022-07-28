@@ -1,5 +1,5 @@
 {
-	"host": "ebu-cdk.innotrade.com",
+	"host": "ebucore-plus-dk.org",
 	"schemes": "https",
 	"security": {
 		"authentication": "keycloak",

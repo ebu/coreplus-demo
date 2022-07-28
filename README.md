@@ -9,7 +9,7 @@ We can try out the EBUCore+ Demonstrator Kit in three ways.
 
 ## Community Edition
  
-The community edition is the shared instance which is directly available [Here](https://ebu-cdk.innotrade.com)
+The community edition is the shared instance which is directly available [Here](https://ebucore-plus-dk.org/)
 
 
 For hybrid and local installation, we would need to have Prerequisites fulfilled 
