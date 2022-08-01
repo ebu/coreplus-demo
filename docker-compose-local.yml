@@ -70,6 +70,11 @@ services:
     build:
       context: ./backend/services/cache-management
       dockerfile: Dockerfile
+    deploy:
+      restart_policy:
+        condition: on-failure
+        max_attempts: 4
+        window: 200s
     volumes:
       - ./backend/services/cache-management:/app/services/cache-management:ro
     ports:
@@ -89,6 +94,11 @@ services:
     build:
       context: ./backend/services/individual-management
       dockerfile: Dockerfile
+    deploy:
+      restart_policy:
+        condition: on-failure
+        max_attempts: 4
+        window: 200s
     volumes:
       - ./backend/services/individual-management:/app/services/individual-management:ro
     ports:
@@ -105,6 +115,11 @@ services:
     build:
       context: ./backend/services/sparql-assistant
       dockerfile: Dockerfile
+    deploy:
+      restart_policy:
+        condition: on-failure
+        max_attempts: 4
+        window: 200s
     volumes:
       - ./backend/services/sparql-assistant:/app/services/sparql-assistant:ro
     ports:
@@ -121,6 +136,11 @@ services:
     build:
       context: ./backend/services/ontology-management
       dockerfile: Dockerfile
+    deploy:
+      restart_policy:
+        condition: on-failure
+        max_attempts: 4
+        window: 200s
     volumes:
       - ./backend/services/ontology-management:/app/services/ontology-management:ro
     ports:
@@ -137,6 +157,11 @@ services:
     build:
       context: ./backend/services/tenant-management
       dockerfile: Dockerfile
+    deploy:
+      restart_policy:
+        condition: on-failure
+        max_attempts: 4
+        window: 200s
     volumes:
       - ./backend/services/tenant-management:/app/services/tenant-management:ro
     ports:
@@ -153,6 +178,11 @@ services:
     build:
       context: ./backend/services/api-assistant
       dockerfile: Dockerfile
+    deploy:
+      restart_policy:
+        condition: on-failure
+        max_attempts: 4
+        window: 200s
     volumes:
       - ./backend/services/api-assistant:/app/services/api-assistant:ro
     ports:
@@ -169,6 +199,11 @@ services:
     build:
       context: ./backend/services/graphdb-management
       dockerfile: Dockerfile
+    deploy:
+      restart_policy:
+        condition: on-failure
+        max_attempts: 4
+        window: 200s
     volumes:
       - ./backend/services/graphdb-management:/app/services/graphdb-management:ro
     ports:
@@ -185,6 +220,11 @@ services:
     build:
       context: ./backend/services/cdk-backend
       dockerfile: Dockerfile
+    deploy:
+      restart_policy:
+        condition: on-failure
+        max_attempts: 4
+        window: 200s
     volumes:
       - ./backend/services/cdk-backend:/app/services/cdk-backend:rw
     ports:
