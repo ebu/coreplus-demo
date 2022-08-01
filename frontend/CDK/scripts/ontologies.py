@@ -1,4 +1,5 @@
 import sys
+from turtle import title
 import uuid
 import requests
 import pandas as pd
@@ -495,9 +496,7 @@ def visualize(tenant,
               password,
               source_df,
               iris,
-              title='Network Graph',
               show_properties=False,
-              show_legend=True,
               show_subclasses=True,
               show_superclasses=True,
               language='en',
@@ -524,7 +523,7 @@ def visualize(tenant,
     def format_description(description):
 
         if description:
-            description_ = 'Description:\n'
+            description_ = ''
             for index, char in enumerate(description):
                 # Condition is set to display only 200 characters
                 if index >= 200:
@@ -535,7 +534,7 @@ def visualize(tenant,
                     description_ += '\n'
                 description_ += char
         else:
-            description_ = 'Not available...'
+            description_ = ''
 
         return description_
 
@@ -594,6 +593,7 @@ def visualize(tenant,
 
         return data
 
+    title = 'Network Graph for '.join([iri.split('#')[-1]+',' for iri in iris])
     # Creating a Network object
     network = Network(height='800px', width='100%',
                       directed=True, notebook=True, heading=title)
@@ -609,7 +609,7 @@ def visualize(tenant,
 
     # Acquiring descriptions for all classes
     descriptions = __accquire_description__(
-        username=username, password=password, tenant=tenant)
+        tenant=tenant, username=username, password=password)
 
     # Forming a dictionaries out of involved classes and properties
     nodes = {}
@@ -645,9 +645,10 @@ def visualize(tenant,
                 node.update({'width': 4})
 
             all_properties = __accquire_properties__(iri=iri,
+                                                     tenant=tenant,
                                                      username=username,
-                                                     password=password,
-                                                     tenant=tenant)
+                                                     password=password
+                                                    )
             # Adding properties to tooltip
             if verbose:
                 node.update({'tooltip': node.get('tooltip') +
@@ -682,9 +683,10 @@ def visualize(tenant,
 
                             if verbose:
                                 all_properties = __accquire_properties__(iri=range_,
+                                                                         tenant=tenant,
                                                                          username=username,
-                                                                         password=password,
-                                                                         tenant=tenant)
+                                                                         password=password
+                                                                         )
                                 node.update({'tooltip': node.get(
                                     'tooltip')+format_properties(all_properties)})
                         else:
