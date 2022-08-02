@@ -1,5 +1,6 @@
 [
-	{ "customerName": "sem42-de", "maxNoOfTenants": "3" },
-	{ "customerName": "swr-de", "maxNoOfTenants": "1" },
-	{ "customerName": "ard-de", "maxNoOfTenants": "3" }
+  {
+    "customerName": "sem42-de",
+    "maxNoOfTenants": "3"
+  }
 ]
