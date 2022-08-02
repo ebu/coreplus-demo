@@ -76,7 +76,7 @@ services:
         max_attempts: 4
         window: 200s
     volumes:
-      - ./backend/services/cache-management:/app/services/cache-management:ro
+      - ./backend/services/cache-management:/app/services/cache-management:rw
     ports:
       - 3000:3000
     depends_on:
@@ -163,13 +163,16 @@ services:
         max_attempts: 4
         window: 200s
     volumes:
-      - ./backend/services/tenant-management:/app/services/tenant-management:ro
+      - ./backend/services/tenant-management:/app/services/tenant-management:rw
     ports:
       - 3004:3004
     depends_on:
       - graphdb
       - keycloak
       - redis-master
+    environment:
+      - HOST=localhost
+      - SCHEMES=http
     networks:
       - isolated-network
   api-assistant-service:

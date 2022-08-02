@@ -1,6 +1,4 @@
 {
-	"scheme": "https",
-	"host": "ebucore-plus-dk.org",
 	"graphdb": {
 		"dbUrl": "http://graphdb:7200",
 		"schema": "Test",
