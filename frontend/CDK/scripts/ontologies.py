@@ -133,9 +133,9 @@ def __extract_labels_from_iris__(iris):
 def __accquire_properties__(iri, tenant, username, password):
 
     properties = get_properties(iri=iri,
+                                tenant=tenant,
                                 username=username,
                                 password=password,
-                                tenant=tenant,
                                 show_table=False,
                                 raw=True)
 
@@ -204,7 +204,7 @@ def get_individuals(iri, tenant, username, password, show_table=True):
 
     url = f'{URL}{INDIVIDUAL_NAMESPACE}/v1/read-individual'
 
-    access_token = __get_access_token__(username=username, password=password, tenant=tenant)
+    access_token = __get_access_token__(tenant=tenant, username=username, password=password)
 
     headers = {
         'Content-Type': 'application/json',
