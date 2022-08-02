@@ -1,3 +1,6 @@
+import os
+
+
 # Config vars for notebook
 NODE_SIZE = 40
 CLASS_SHAPE = 'dot'
@@ -36,7 +39,7 @@ FIXED_LEGEND = 'https://image-assets-for-cdk.s3.eu-central-1.amazonaws.com/legen
 ITABLE_TITLE = '<h4 style="text-alignt:center"><label style="font-weight:bold">Table: </label><label>{title}</label></h4>'
 
 # Config vars for APIs
-URL = 'https://ebucore-plus-dk.org'
+URL = os.getenv('URL', 'https://ebucore-plus-dk.org')
 ENAPSO_NAMESPACE = '/enapso-dev/ontology-management'
 GRAPH = 'http://www.ebu.ch/metadata/ontologies/ebucore'
 INDIVIDUAL_NAMESPACE = '/enapso-dev/individual-management'

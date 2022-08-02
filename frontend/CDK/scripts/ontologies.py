@@ -170,7 +170,7 @@ def __accquire_properties__(iri, tenant, username, password):
 
 def __accquire_description__(tenant, username, password):
 
-    access_token = __get_access_token__(username, password, tenant)
+    access_token = __get_access_token__(tenant=tenant, username=username, password=password)
 
     descriptions = __get_descriptions__(access_token=access_token)
 
@@ -262,7 +262,7 @@ def load_model(tenant, username, password):
 
                     element.update({f'Description({key})': value})
 
-    access_token = __get_access_token__(username=username, password=password, tenant=tenant)
+    access_token = __get_access_token__(tenant=tenant, username=username, password=password)
 
     if not access_token:
         return None
@@ -387,7 +387,7 @@ def get_properties(iri, tenant, username, password, show_table=True, raw=False):
     Returns:
         DataFrame: The DataFrame holding the properties.
     """
-    access_token = __get_access_token__(username, password, tenant)
+    access_token = __get_access_token__(tenant=tenant, username=username, password=password)
 
     url = f'{URL}{ENAPSO_NAMESPACE}/v1/get-class-own-properties'
 
@@ -422,10 +422,10 @@ def get_properties(iri, tenant, username, password, show_table=True, raw=False):
 
     alterantives = {
         'prop': 'Property',
-                'type': 'Type',
-                'range': 'Range',
-                'max': 'Max Cardinality',
-                'some': 'Some Values From'
+                'type': 'type',
+                'range': 'range',
+                'max': 'maxCardinality',
+                'some': 'someValue'
     }
 
     columns = list(properties.columns)
@@ -593,7 +593,11 @@ def visualize(tenant,
 
         return data
 
-    title = 'Network Graph for '.join([iri.split('#')[-1]+',' for iri in iris])
+    if len(iris) == 1:
+        title = 'Network Graph for '+iris[0].split('#')[-1]
+    else:
+        title = ', '.join([iri.split('#')[-1] for iri in iris])
+        title = 'Netrwork Graph of '+title
     # Creating a Network object
     network = Network(height='800px', width='100%',
                       directed=True, notebook=True, heading=title)
@@ -728,23 +732,4 @@ def visualize(tenant,
                              color=edge.get('color'),
                              arrowStrikethrough=True)
 
-    # Display the legend
-    # if show_legend and show_properties:
-    #     network.add_node(n_id=-99999,
-    #                      label=' ',
-    #                      shape='image',
-    #                      image=FULL_LEGEND,
-    #                      size=100,
-    #                      x=-700,
-    #                      y=-200,
-    #                      fixed=True)
-    # elif show_legend:
-    #     network.add_node(n_id=-99999,
-    #                      label=' ',
-    #                      shape='image',
-    #                      image=SHORT_LEGEND,
-    #                      size=100,
-    #                      x=-700,
-    #                      y=-200,
-    #                      fixed=True)
     return network
