@@ -1,12 +1,12 @@
 import sys
-from turtle import width
+from turtle import title
 import uuid
 import requests
 import pandas as pd
 from .config import *
 from itables import show
 from pyvis.network import Network
-import os
+
 
 def __flatten__(data, parent={}):
 
@@ -31,8 +31,7 @@ def __flatten__(data, parent={}):
 
     return resultant
 
-
-def __get_access_token__(username, password, tenant):
+def __get_access_token__(tenant, username, password):
 
     url = f'{URL}/auth/realms/{tenant}/protocol/openid-connect/token'
 
@@ -54,7 +53,6 @@ def __get_access_token__(username, password, tenant):
     access_token = access_token.get('access_token')
 
     return access_token
-
 
 def __get_classes__(access_token):
 
@@ -80,7 +78,6 @@ def __get_classes__(access_token):
     classes = __flatten__(classes.get('records'))
 
     return classes
-
 
 def __get_descriptions__(access_token):
 
@@ -120,7 +117,6 @@ def __get_descriptions__(access_token):
 
     return descriptions_
 
-
 def __remove_nans__(df):
 
     for coulmn in list(df.columns):
@@ -128,15 +124,13 @@ def __remove_nans__(df):
 
     return df
 
-
 def __extract_labels_from_iris__(iris):
 
     labels = [iri.split('#')[-1] for iri in iris if iri]
 
     return labels
 
-
-def __accquire_properties__(iri, username, password, tenant):
+def __accquire_properties__(iri, tenant, username, password):
 
     properties = get_properties(iri=iri,
                                 username=username,
@@ -174,15 +168,13 @@ def __accquire_properties__(iri, username, password, tenant):
 
     return properties_
 
-
-def __accquire_description__(username, password, tenant):
+def __accquire_description__(tenant, username, password):
 
     access_token = __get_access_token__(username, password, tenant)
 
     descriptions = __get_descriptions__(access_token=access_token)
 
     return descriptions
-
 
 def itable_config(opt, init_notebook_mode):
     """A callable-only function to configure itable for notebook.
@@ -197,9 +189,8 @@ def itable_config(opt, init_notebook_mode):
     opt.classes = ['cell-border', 'stripe', 'hover']
     init_notebook_mode(all_interactive=True)
 
-
-def get_individuals(iri, username, password, tenant, show_table=True):
-    """A function that acquires individuals for the given IRI.
+def get_individuals(iri, tenant, username, password, show_table=True):
+    """It acquires individuals for the given IRI.
 
     Args:
         iri (string): The IRI to query individuals for.
@@ -241,9 +232,8 @@ def get_individuals(iri, username, password, tenant, show_table=True):
 
     return individuals_df
 
-
-def load_model(username, password, tenant):
-    """Acquires model for the notebook.
+def load_model(tenant, username, password):
+    """It acquires model for the notebook.
 
     Args:
         username (string): Username to access API.
@@ -286,9 +276,8 @@ def load_model(username, password, tenant):
 
     return classes_df
 
-
 def get_all_classes(source_df, language='en', show_table=True):
-    """Extracts a unqiue DataFrame of classes from the given DataFrame.
+    """It extracts a unique DataFrame of classes from the given DataFrame.
 
     Args:
         source_df (DataFrame): Primary DataFrame to query from.
@@ -315,14 +304,13 @@ def get_all_classes(source_df, language='en', show_table=True):
 
     return resultant_df
 
-
 def get_classes_by_iris(source_df,
                         iris,
                         show_subclasses=True,
                         show_superclasses=True,
                         language='en',
                         show_table=True):
-    """Extracts classes based on give IRIs along with the relations.
+    """It extracts classes based on give IRIs along with the relations.
 
     Args:
         source_df (DataFrame): Primary DataFrame to query from.
@@ -386,9 +374,8 @@ def get_classes_by_iris(source_df,
 
     return resultant_df
 
-
-def get_properties(iri, username, password, tenant, show_table=True, raw=False):
-    """Acquires propeties for the given IRI.
+def get_properties(iri, tenant, username, password, show_table=True, raw=False):
+    """It acquires propeties for the given IRI.
 
     Args:
         iri (string): The IRI to acquire properties for.
@@ -469,9 +456,8 @@ def get_properties(iri, username, password, tenant, show_table=True, raw=False):
 
     return properties
 
-
 def get_description(source_df, iri, language='en', show_table=True):
-    """Extarcts descriptions for the given IRI.
+    """It extarcts descriptions for the given IRI.
 
     Args:
         source_df (DataFrame): Primary DataFrame to query from.
@@ -505,19 +491,17 @@ def get_description(source_df, iri, language='en', show_table=True):
 
     return resultant_df
 
-def visualize(username,
+def visualize(tenant,
+              username,
               password,
-              tenant,
               source_df,
               iris,
-              title='Network Graph',
               show_properties=False,
-              show_legend=True,
               show_subclasses=True,
               show_superclasses=True,
               language='en',
               verbose=True):
-    """Generates a Network object for the given list of IRIs.
+    """It generates a Network object for the given list of IRIs.
 
     Args:
         username (string): Username to access API.
@@ -539,7 +523,7 @@ def visualize(username,
     def format_description(description):
 
         if description:
-            description_ = 'Description:\n'
+            description_ = ''
             for index, char in enumerate(description):
                 # Condition is set to display only 200 characters
                 if index >= 200:
@@ -550,7 +534,7 @@ def visualize(username,
                     description_ += '\n'
                 description_ += char
         else:
-            description_ = 'Not available...'
+            description_ = ''
 
         return description_
 
@@ -609,6 +593,7 @@ def visualize(username,
 
         return data
 
+    title = 'Network Graph for '.join([iri.split('#')[-1]+',' for iri in iris])
     # Creating a Network object
     network = Network(height='800px', width='100%',
                       directed=True, notebook=True, heading=title)
@@ -624,7 +609,7 @@ def visualize(username,
 
     # Acquiring descriptions for all classes
     descriptions = __accquire_description__(
-        username=username, password=password, tenant=tenant)
+        tenant=tenant, username=username, password=password)
 
     # Forming a dictionaries out of involved classes and properties
     nodes = {}
@@ -660,9 +645,10 @@ def visualize(username,
                 node.update({'width': 4})
 
             all_properties = __accquire_properties__(iri=iri,
+                                                     tenant=tenant,
                                                      username=username,
-                                                     password=password,
-                                                     tenant=tenant)
+                                                     password=password
+                                                    )
             # Adding properties to tooltip
             if verbose:
                 node.update({'tooltip': node.get('tooltip') +
@@ -697,9 +683,10 @@ def visualize(username,
 
                             if verbose:
                                 all_properties = __accquire_properties__(iri=range_,
+                                                                         tenant=tenant,
                                                                          username=username,
-                                                                         password=password,
-                                                                         tenant=tenant)
+                                                                         password=password
+                                                                         )
                                 node.update({'tooltip': node.get(
                                     'tooltip')+format_properties(all_properties)})
                         else:
@@ -742,22 +729,22 @@ def visualize(username,
                              arrowStrikethrough=True)
 
     # Display the legend
-    if show_legend and show_properties:
-        network.add_node(n_id=-99999,
-                         label=' ',
-                         shape='image',
-                         image=FULL_LEGEND,
-                         size=100,
-                         x=-700,
-                         y=-200,
-                         fixed=True)
-    elif show_legend:
-        network.add_node(n_id=-99999,
-                         label=' ',
-                         shape='image',
-                         image=SHORT_LEGEND,
-                         size=100,
-                         x=-700,
-                         y=-200,
-                         fixed=True)
+    # if show_legend and show_properties:
+    #     network.add_node(n_id=-99999,
+    #                      label=' ',
+    #                      shape='image',
+    #                      image=FULL_LEGEND,
+    #                      size=100,
+    #                      x=-700,
+    #                      y=-200,
+    #                      fixed=True)
+    # elif show_legend:
+    #     network.add_node(n_id=-99999,
+    #                      label=' ',
+    #                      shape='image',
+    #                      image=SHORT_LEGEND,
+    #                      size=100,
+    #                      x=-700,
+    #                      y=-200,
+    #                      fixed=True)
     return network

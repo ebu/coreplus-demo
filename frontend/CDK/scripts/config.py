@@ -1,6 +1,3 @@
-import os
-
-
 # Config vars for notebook
 NODE_SIZE = 40
 CLASS_SHAPE = 'dot'
@@ -33,12 +30,13 @@ ITABLE_COLDEF = {
 SUPERCLASS_COLOR = '#ACF'
 SUBCLASS_COLOR = '#ABEBC6'
 PROPERTY_EDGE_COLOR = '#000'
-FULL_LEGEND = 'https://res.cloudinary.com/alieymsxxn/image/upload/v1655326290/legend_full_new_kaewdm.gif'
-SHORT_LEGEND = 'https://res.cloudinary.com/alieymsxxn/image/upload/v1655326772/legend_short_final_cki45k.gif'
+# FULL_LEGEND = 'https://image-assets-for-cdk.s3.eu-central-1.amazonaws.com/Properties+diagram+-+Legend.png'
+# SHORT_LEGEND = 'https://image-assets-for-cdk.s3.eu-central-1.amazonaws.com/Class+hierarchy+diagram+-+Legend.png'
+FIXED_LEGEND = 'https://image-assets-for-cdk.s3.eu-central-1.amazonaws.com/legend_for_cell.png'
 ITABLE_TITLE = '<h4 style="text-alignt:center"><label style="font-weight:bold">Table: </label><label>{title}</label></h4>'
 
 # Config vars for APIs
-URL = os.getenv('URL')
+URL = 'https://ebucore-plus-dk.org'
 ENAPSO_NAMESPACE = '/enapso-dev/ontology-management'
 GRAPH = 'http://www.ebu.ch/metadata/ontologies/ebucore'
 INDIVIDUAL_NAMESPACE = '/enapso-dev/individual-management'
