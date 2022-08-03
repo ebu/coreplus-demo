@@ -36,7 +36,7 @@ services:
     volumes:
       - ./backend/keycloak:/opt/jboss/keycloak/imports
     environment:
-      KEYCLOAK_IMPORT: /opt/jboss/keycloak/imports/Demo-Tenant.json -Dkeycloak.profile.feature.upload_scripts=enabled
+      KEYCLOAK_IMPORT: /opt/jboss/keycloak/imports/demo-tenant.json -Dkeycloak.profile.feature.upload_scripts=enabled
       DB_VENDOR: POSTGRES
       DB_ADDR: postgres
       DB_DATABASE: keycloak
@@ -264,4 +264,4 @@ services:
         - "host.docker.internal:host-gateway"
         environment:
         - URL=http://host.docker.internal
-        - TENANT=Demo-Tenant
+        - TENANT=demo-tenant

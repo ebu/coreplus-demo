@@ -15,4 +15,4 @@ services:
         - isolated-network
         environment:
         - URL=https://ebucore-plus-dk.org
-        - TENANT=Demo-Tenant
+        - TENANT=demo-tenant
