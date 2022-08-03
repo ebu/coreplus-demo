@@ -2,5 +2,9 @@
   {
     "customerName": "sem42-de",
     "maxNoOfTenants": "3"
+  },
+  {
+    "customerName": "ard",
+    "maxNoOfTenants": "3"
   }
 ]
