@@ -70,6 +70,7 @@ sudo chmod -R 777 coreplus-demo
 
 
 ```sh
+cd coreplus-demo
 docker-compose -f docker-compose-hybrid.yml up -d
 ```
 
