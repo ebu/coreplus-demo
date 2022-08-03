@@ -42,7 +42,7 @@ def __get_access_token__(tenant, username, password):
     }
 
     try:
-        response = requests.post(url=url, data=body)
+        response = requests.post(url=url, data=body, timeout=300)
         response.raise_for_status()
     except requests.exceptions.RequestException as exception:
         sys.stdout.write(str(exception))
@@ -67,7 +67,7 @@ def __get_classes__(access_token):
             'graph':  GRAPH,
         }
 
-        response = requests.post(url=url, headers=headers, json=body)
+        response = requests.post(url=url, headers=headers, json=body, timeout=300)
         response.raise_for_status()
     except requests.exceptions.RequestException as exception:
         sys.stdout.write(exception)
@@ -91,7 +91,7 @@ def __get_descriptions__(access_token):
         body = {
             'graph': GRAPH,
         }
-        response = requests.post(url=url, headers=headers, json=body)
+        response = requests.post(url=url, headers=headers, json=body, timeout=300)
         response.raise_for_status()
     except requests.exceptions.RequestException as exception:
         sys.stdout.write(str(exception))
@@ -212,7 +212,7 @@ def get_individuals(iri, tenant, username, password, show_table=True):
 
     try:
         body = {'cls': iri}
-        response = requests.post(url=url, headers=headers, json=body)
+        response = requests.post(url=url, headers=headers, json=body, timeout=300)
         response.raise_for_status()
     except requests.exceptions.RequestException as exception:
         return False, str(exception)
@@ -397,7 +397,7 @@ def get_properties(iri, tenant, username, password, show_table=True, raw=False):
 
     try:
         body = {'cls': iri}
-        response = requests.post(url=url, headers=headers, json=body)
+        response = requests.post(url=url, headers=headers, json=body, timeout=300)
         response.raise_for_status()
 
     except requests.exceptions.RequestException as exception:
