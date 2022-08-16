@@ -14,16 +14,16 @@ def __flatten__(data, parent={}):
     for element in data:
         element.update(**parent)
         resultant.append(element)
-        element.update({'Class Label': element.pop('label', None)})
-        element.update({'Class IRI': element.pop('cls', None)})
+        element.update({'Label': element.pop('label', None)})
+        element.update({'IRI': element.pop('cls', None)})
         element.update({'Language': element.pop('lang', '')})
-        element.update({'hasSubclasses': not element.pop('leaf', False)})
+        element.update({'IsLeafClass': not element.pop('leaf', False)})
 
-        if element.get('hasSubclasses', None):
+        if element.get('IsLeafClass', None):
             children = element.pop('children')
             _parent = {
-                'Superclass Labels': element.get('Class Label'),
-                'Superclass IRIs': element.get('Class IRI'),
+                'Superclass labels': element.get('Label'),
+                'Superclass IRIs': element.get('IRI'),
                 'Superclass Language': element.get('Language')
             }
             resultant += __flatten__(data=children, parent=_parent)
@@ -222,7 +222,14 @@ def get_individuals(iri, tenant, username, password, show_table=True):
     individuals_df = pd.DataFrame(data=individuals)
 
     label = iri.split('#')[-1]
-
+    
+    alterantives = {
+        'iri': 'IRI',
+        'alternativeTitle': 'ec:alternativeTitle',
+        'contentDescription': 'ec:contentDescription'
+    }
+    individuals_df.rename(columns=alterantives, inplace=True)
+    
     if show_table:
         show(df=individuals_df,
              columnDefs=[ITABLE_COLDEF],
@@ -247,7 +254,7 @@ def load_model(tenant, username, password):
         descriptions = __get_descriptions__(access_token=access_token)
 
         for element in classes:
-            iri = element.get('Class IRI')
+            iri = element.get('IRI')
             description = descriptions.get(iri, None)
             if description:
                 for key, value in description.items():
@@ -290,9 +297,9 @@ def get_all_classes(source_df, language='en', show_table=True):
 
     resultant_df = source_df.copy()
     resultant_df = resultant_df[resultant_df['Language'] == language]
-    resultant_df.drop_duplicates(subset='Class IRI', inplace=True)
+    resultant_df.drop_duplicates(subset='IRI', inplace=True)
     resultant_df = resultant_df[resultant_df.columns[resultant_df.columns.isin(
-        ['Class Label', 'hasSubclasses', 'Class IRI'])]]
+        ['Label', 'IsLeafClass', 'IRI'])]]
     resultant_df.reset_index(drop=True, inplace=True)
 
     if show_table:
@@ -331,7 +338,7 @@ def get_classes_by_iris(source_df,
 
     for iri in iris:
 
-        class_df = extracted_df.copy()[extracted_df['Class IRI'] == iri]
+        class_df = extracted_df.copy()[extracted_df['IRI'] == iri]
         resultant_df = pd.concat([resultant_df, class_df])
 
         if show_subclasses:
@@ -341,12 +348,12 @@ def get_classes_by_iris(source_df,
         if show_superclasses:
             for _, row in resultant_df['Superclass IRIs'].iteritems():
                 superclass_df = extracted_df.copy(
-                )[extracted_df['Class IRI'] == row]
+                )[extracted_df['IRI'] == row]
                 resultant_df = pd.concat([resultant_df, superclass_df])
 
-    resultant_df.sort_values(by=['Class Label'], inplace=True)
+    resultant_df.sort_values(by=['Label'], inplace=True)
     resultant_df.drop_duplicates(
-        subset=['Class IRI', 'Superclass IRIs'], inplace=True)
+        subset=['IRI', 'Superclass IRIs'], inplace=True)
     resultant_df.drop(['Description(French)',
                        'Description(German)',
                        'Description(English)',
@@ -362,9 +369,9 @@ def get_classes_by_iris(source_df,
     if show_table:
         title = ', '.join(labels)
         if len(labels) > 1:
-            title = 'Hierarchy of classes ' + title
+            title = 'Class hierarchy of ' + title
         else:
-            title = 'Hierarchy of class ' + title
+            title = 'Class hierarchy of ' + title
 
         show(df=resultant_df,
              columnDefs=[ITABLE_COLDEF],
@@ -421,10 +428,10 @@ def get_properties(iri, tenant, username, password, show_table=True, raw=False):
 
     alterantives = {
         'prop': 'Property',
-                'type': 'type',
-                'range': 'range',
-                'max': 'maxCardinality',
-                'some': 'someValue'
+        'type': 'rdf:type',
+        'range': 'rdfs:range',
+        'max': 'owl:maxCardinality',
+        'some': 'owl:someValuesFrom'
     }
 
     columns = list(properties.columns)
@@ -451,7 +458,7 @@ def get_properties(iri, tenant, username, password, show_table=True, raw=False):
         show(df=properties,
              columnDefs=[ITABLE_COLDEF],
              eval_functions=True,
-             tags=ITABLE_TITLE.format(title=f'Properties of class {label}'))
+             tags=ITABLE_TITLE.format(title=f'Properties with domain {label}'))
 
     return properties
 
@@ -469,15 +476,15 @@ def get_description(source_df, iri, language='en', show_table=True):
     """
     resultant_df = source_df.copy()
     resultant_df = resultant_df[(resultant_df['Language'] == language) & (
-        resultant_df['Class IRI'] == iri)]
+        resultant_df['IRI'] == iri)]
 
     language = LANGUAGE_ACRONYMS.get(language, 'Undefined')
 
-    resultant_df.drop_duplicates(subset='Class IRI', inplace=True)
+    resultant_df.drop_duplicates(subset='IRI', inplace=True)
     resultant_df = resultant_df[resultant_df.columns[resultant_df.columns.isin(
-        ['Class Label', f'Description({language})',  'Class IRI'])]]
+        ['Label', f'Description({language})',  'IRI'])]]
     resultant_df.rename(
-        columns={f'Description({language})': 'Description'}, inplace=True)
+        columns={f'Description({language})': 'dcterms:description', 'Label': 'rdfs:label'}, inplace=True)
     resultant_df.reset_index(drop=True, inplace=True)
 
     label = __extract_labels_from_iris__(iris=[iri])[0]
@@ -574,12 +581,12 @@ def visualize(tenant,
         extracted_df = source_df[(source_df['Language'] == language) &
                                  (source_df['Superclass Language'].isin(
                                      [language, '']))]
-        extracted_df = extracted_df.copy()[extracted_df['Class IRI'] == iri]
+        extracted_df = extracted_df.copy()[extracted_df['IRI'] == iri]
         extracted_df.drop_duplicates(
-            subset=['Class IRI', 'Superclass IRIs'], inplace=True)
+            subset=['IRI', 'Superclass IRIs'], inplace=True)
         if not extracted_df.empty:
-            label = extracted_df['Class Label'].values[0]
-            color = SUPERCLASS_COLOR if extracted_df['hasSubclasses'].values[0] else SUBCLASS_COLOR
+            label = extracted_df['Label'].values[0]
+            color = SUPERCLASS_COLOR if extracted_df['IsLeafClass'].values[0] else SUBCLASS_COLOR
         else:
             label = iri.split('#')[-1]
             color = SUPERCLASS_COLOR
@@ -591,12 +598,15 @@ def visualize(tenant,
         }
 
         return data
-
+    if show_properties:
+        prefix = 'Figure: Properties with domain '
+    else:
+        prefix = 'Figure: Class hierarchy of '
     if len(iris) == 1:
-        title = 'Network Graph for '+iris[0].split('#')[-1]
+        title = prefix+iris[0].split('#')[-1]
     else:
         title = ', '.join([iri.split('#')[-1] for iri in iris])
-        title = 'Netrwork Graph of '+title
+        title = prefix+title
     # Creating a Network object
     network = Network(height='800px', width='100%',
                       directed=True, notebook=True, heading=title)
@@ -618,7 +628,7 @@ def visualize(tenant,
     nodes = {}
     edges = []
     for _, row in resultant_df.iterrows():
-        iri = row.get('Class IRI')
+        iri = row.get('IRI')
         superclass_iri = row.get('Superclass IRIs')
         description = descriptions.get(iri, {}).get(language, None)
 
@@ -635,9 +645,9 @@ def visualize(tenant,
         if nodes.get(iri, {}).get('reset', True):
             node = {
                 'node_id': iri,
-                'label': row.get('Class Label'),
+                'label': row.get('Label'),
                 'tooltip': format_description(description),
-                'color': SUPERCLASS_COLOR if row.get('hasSubclasses', False) else SUBCLASS_COLOR,
+                'color': SUPERCLASS_COLOR if row.get('IsLeafClass', False) else SUBCLASS_COLOR,
                 'shape': CLASS_SHAPE,
                 'size': NODE_SIZE,
                 'reset': False

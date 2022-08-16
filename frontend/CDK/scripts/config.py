@@ -16,10 +16,12 @@ ITABLE_COLDEF = {
     "createdCell": """
         function (td, cellData, rowData, row, col) {{
             $(td).css('word-wrap', 'break-word')
+            if (cellData === '1.0' ) {{
+                $(td).html('1')
+            }}
             if (cellData == false) {{
                 $(td).css('color', '{superclass_color}')
                 $(td).css('font-weight', 'bold')
-                $(td).html = "False"
             }}
             else if (cellData == true) {{
                 $(td).css('color', '{subclass_color}')
@@ -33,8 +35,6 @@ ITABLE_COLDEF = {
 SUPERCLASS_COLOR = '#ACF'
 SUBCLASS_COLOR = '#ABEBC6'
 PROPERTY_EDGE_COLOR = '#000'
-# FULL_LEGEND = 'https://image-assets-for-cdk.s3.eu-central-1.amazonaws.com/Properties+diagram+-+Legend.png'
-# SHORT_LEGEND = 'https://image-assets-for-cdk.s3.eu-central-1.amazonaws.com/Class+hierarchy+diagram+-+Legend.png'
 FIXED_LEGEND = 'https://image-assets-for-cdk.s3.eu-central-1.amazonaws.com/legend_for_cell.png'
 ITABLE_TITLE = '<h4 style="text-alignt:center"><label style="font-weight:bold">Table: </label><label>{title}</label></h4>'
 
