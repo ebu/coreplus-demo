@@ -38,6 +38,7 @@ git lfs install
 
 For git lfs installation you can refer to this link as well [https://git-lfs.github.com/](https://git-lfs.github.com/) 
 
+
 ## Installation
 
 Clone the repository
@@ -74,6 +75,16 @@ cd coreplus-demo
 docker-compose -f docker-compose-hybrid.yml up -d
 ```
 
+> Note: If you have run it previously and you are not getting the latest changes you can run this command to build the images for the latest changes
+For Windows
+``
+docker-compose -f ./docker-compose-hybrid.yml build --no-cache
+``
+For Mac
+``
+docker-compose -f docker-compose-hybrid.yml build --no-cache
+``
+
 
 The CDK would be available on the browser at [http://localhost:8888](http://localhost:8888)
 
@@ -108,12 +119,25 @@ cd coreplus-demo
 docker-compose -f docker-compose-local.yml up -d
 ```
 
+> Note: If you have run it previously and you are not getting the latest changes you can run this command to build the images for the latest changes
+For Windows
+``
+docker-compose -f ./docker-compose-local.yml build --no-cache
+``
+For Mac
+``
+docker-compose -f docker-compose-local.yml build --no-cache
+``
+
 
 Similarly, we can compose it down with the command
 
 ```sh
 docker-compose -f .\docker-compose-local.yml down
 ```
+
+
+
 
 The CDK would be available on the browser at [http://localhost:8888](http://localhost:8888)
 
