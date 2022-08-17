@@ -53,15 +53,19 @@ git clone https://github.com/ebu/coreplus-demo.git
 In the hybrid installation, the user would have their own Jupyter lab environment in which they could play with which would be connected to the cloud backend services.
 
 ### Intallation
+
 > Note: If you have run it previously and you are not getting the latest changes you can run this command to build the images for the latest changes and then run it
+
 For Windows
-``
+```
+cd coreplus-demo
 docker-compose -f ./docker-compose-hybrid.yml build --no-cache
-``
+```
 For Mac
-``
+```
+cd coreplus-demo
 docker-compose -f docker-compose-hybrid.yml build --no-cache
-``
+```
 
 
 To install the hybrid version we will go to the terminal in the coreplus-demo directory and run this command.
@@ -101,17 +105,18 @@ In the local installation, the user would get both the frontend and the backend 
 
 > Important!: **Make sure the docker engine resource for memory is more than 8GB.**
 
-
-
 > Note: If you have run it previously and you are not getting the latest changes you can run this command to build the images for the latest changes and then run it
+
 For Windows
-``
+```
+cd coreplus-demo
 docker-compose -f ./docker-compose-local.yml build --no-cache
-``
+```
 For Mac
-``
+```
+cd coreplus-demo
 docker-compose -f docker-compose-local.yml build --no-cache
-``
+```
 
 To install the local version we will go to the terminal in the coreplus-demo directory and run this command.
 
