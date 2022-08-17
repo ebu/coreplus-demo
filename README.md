@@ -64,9 +64,9 @@ docker-compose -f .\docker-compose-hybrid.yml up -d
 
 For Mac and Linux
 > Note: We would give coreplus-demo permissions by command:
-``sh
+```sh
 sudo chmod -R 777 coreplus-demo
-``
+```
 
 
 ```sh
