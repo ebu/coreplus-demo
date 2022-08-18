@@ -17,9 +17,9 @@ def __flatten__(data, parent={}):
         element.update({'Label': element.pop('label', None)})
         element.update({'IRI': element.pop('cls', None)})
         element.update({'Language': element.pop('lang', '')})
-        element.update({'IsLeafClass': not element.pop('leaf', False)})
+        element.update({'IsLeafClass': element.pop('leaf', False)})
 
-        if element.get('IsLeafClass', None):
+        if not element.get('IsLeafClass', None):
             children = element.pop('children')
             _parent = {
                 'Superclass labels': element.get('Label'),
@@ -484,7 +484,7 @@ def get_description(source_df, iri, language='en', show_table=True):
     resultant_df = resultant_df[resultant_df.columns[resultant_df.columns.isin(
         ['Label', f'Description({language})',  'IRI'])]]
     resultant_df.rename(
-        columns={f'Description({language})': 'dcterms:description', 'Label': 'rdfs:label'}, inplace=True)
+        columns={f'Description({language})': 'dcterms:description'}, inplace=True)
     resultant_df.reset_index(drop=True, inplace=True)
 
     label = __extract_labels_from_iris__(iris=[iri])[0]
@@ -533,7 +533,7 @@ def visualize(tenant,
             for index, char in enumerate(description):
                 # Condition is set to display only 200 characters
                 if index >= 200:
-                    description_ += '...(see complete in visualization)'
+                    description_ += '...'
                     break
                 # Condition is set to add new line after every 50 characters
                 elif not (index+1) % 50:
@@ -599,7 +599,7 @@ def visualize(tenant,
 
         return data
     if show_properties:
-        prefix = 'Figure: Properties with domain '
+        prefix = 'Figure: Properties of class '
     else:
         prefix = 'Figure: Class hierarchy of '
     if len(iris) == 1:
