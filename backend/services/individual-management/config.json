@@ -19,5 +19,8 @@
 		"host": "redis-master",
 		"port": "6379",
 		"password": "CaVttOERn5"
+	},
+	"quotas": {
+		"maxNoOfIndividualsPerClass": 50
 	}
 }

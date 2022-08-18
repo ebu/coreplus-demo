@@ -38,6 +38,7 @@ git lfs install
 
 For git lfs installation you can refer to this link as well [https://git-lfs.github.com/](https://git-lfs.github.com/) 
 
+
 ## Installation
 
 Clone the repository
@@ -53,6 +54,22 @@ In the hybrid installation, the user would have their own Jupyter lab environmen
 
 ### Intallation
 
+> Note: If you have run it previously and you are not getting the latest changes you can run this command to build the images for the latest changes and then run it
+
+For Windows
+```
+cd coreplus-demo
+docker-compose -f ./docker-compose-hybrid.yml down --rmi all -v
+docker-compose -f ./docker-compose-hybrid.yml build --no-cache
+```
+For Mac
+```
+cd coreplus-demo
+docker-compose -f docker-compose-hybrid.yml down --rmi all -v
+docker-compose -f docker-compose-hybrid.yml build --no-cache
+```
+
+
 To install the hybrid version we will go to the terminal in the coreplus-demo directory and run this command.
 
 For Windows
@@ -64,7 +81,7 @@ docker-compose -f .\docker-compose-hybrid.yml up -d
 
 For Mac and Linux
 > Note: We would give coreplus-demo permissions by command:
-``sh
+``
 sudo chmod -R 777 coreplus-demo
 ``
 
@@ -76,7 +93,6 @@ docker-compose -f docker-compose-hybrid.yml up -d
 
 
 The CDK would be available on the browser at [http://localhost:8888](http://localhost:8888)
-
 Similarly, we can compose it down with the command
 
 ```bash
@@ -91,7 +107,24 @@ In the local installation, the user would get both the frontend and the backend 
 
 > Important!: **Make sure the docker engine resource for memory is more than 8GB.**
 
+> Note: If you have run it previously and you are not getting the latest changes you can run this command to build the images for the latest changes and then run it
+
+For Windows
+```
+cd coreplus-demo
+docker-compose -f ./docker-compose-local.yml down --rmi all -v
+docker-compose -f ./docker-compose-local.yml build --no-cache
+```
+For Mac
+```
+cd coreplus-demo
+docker-compose -f docker-compose-local.yml down --rmi all -v
+docker-compose -f docker-compose-local.yml build --no-cache
+```
+
 To install the local version we will go to the terminal in the coreplus-demo directory and run this command.
+
+
 
 For Widnows
 ```bash
@@ -109,11 +142,15 @@ docker-compose -f docker-compose-local.yml up -d
 ```
 
 
+
 Similarly, we can compose it down with the command
 
 ```sh
 docker-compose -f .\docker-compose-local.yml down
 ```
+
+
+
 
 The CDK would be available on the browser at [http://localhost:8888](http://localhost:8888)
 
