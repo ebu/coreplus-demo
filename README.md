@@ -59,11 +59,13 @@ In the hybrid installation, the user would have their own Jupyter lab environmen
 For Windows
 ```
 cd coreplus-demo
+docker-compose -f ./docker-compose-hybrid.yml down --rmi all -v
 docker-compose -f ./docker-compose-hybrid.yml build --no-cache
 ```
 For Mac
 ```
 cd coreplus-demo
+docker-compose -f docker-compose-hybrid.yml down --rmi all -v
 docker-compose -f docker-compose-hybrid.yml build --no-cache
 ```
 
@@ -110,11 +112,13 @@ In the local installation, the user would get both the frontend and the backend 
 For Windows
 ```
 cd coreplus-demo
+docker-compose -f ./docker-compose-local.yml down --rmi all -v
 docker-compose -f ./docker-compose-local.yml build --no-cache
 ```
 For Mac
 ```
 cd coreplus-demo
+docker-compose -f docker-compose-local.yml down --rmi all -v
 docker-compose -f docker-compose-local.yml build --no-cache
 ```
 
