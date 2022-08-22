@@ -7,11 +7,11 @@ CLASS_SHAPE = 'dot'
 CLASS_EDGE_COLOR = '#AEB6BF'
 DATATYPE_PROPERTY_SHAPE = 'box'
 DATATYPE_PROPERTY_COLOR = '#FC3'
-ITABLE_SUBCLASS_COLOR = '#7DA5C0'
-ITABLE_SUPERCLASS_COLOR = '#7CBC97'
+ITABLE_SUBCLASS_COLOR = '#7CBC97'
+ITABLE_SUPERCLASS_COLOR = '#7DA5C0'
 ITABLE_COLDEF = {
     "width": "120px",
-    "className": "dt-center",
+    "className": "dt-left",
     "targets": "_all",
     "createdCell": """
         function (td, cellData, rowData, row, col) {{
@@ -26,14 +26,13 @@ ITABLE_COLDEF = {
             else if (cellData == true) {{
                 $(td).css('color', '{subclass_color}')
                 $(td).css('font-weight', 'bold')
-                $(td).html = "True"
             }}
         }}
         """.format(superclass_color=ITABLE_SUPERCLASS_COLOR,
                    subclass_color=ITABLE_SUBCLASS_COLOR),
 }
-SUPERCLASS_COLOR = '#ACF'
-SUBCLASS_COLOR = '#ABEBC6'
+SUPERCLASS_COLOR = '#ABEBC6'
+SUBCLASS_COLOR = '#ACF'
 PROPERTY_EDGE_COLOR = '#000'
 FIXED_LEGEND = 'https://image-assets-for-cdk.s3.eu-central-1.amazonaws.com/legend_for_cell.png'
 ITABLE_TITLE = '<h4 style="text-alignt:center"><label style="font-weight:bold">Table: </label><label>{title}</label></h4>'

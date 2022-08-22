@@ -129,12 +129,12 @@ def __extract_labels_from_iris__(iris):
 
     return labels
 
-def __accquire_properties__(iri, tenant, username, password):
+def __accquire_properties__(tenant, username, password, iri):
 
-    properties = get_properties(iri=iri,
-                                tenant=tenant,
+    properties = get_properties(tenant=tenant,
                                 username=username,
                                 password=password,
+                                iri=iri,
                                 show_table=False,
                                 raw=True)
 
@@ -188,13 +188,14 @@ def itable_config(opt, init_notebook_mode):
     opt.classes = ['cell-border', 'stripe', 'hover']
     init_notebook_mode(all_interactive=True)
 
-def get_individuals(iri, tenant, username, password, show_table=True):
+def get_individuals(tenant, username, password, iri, show_table=True):
     """It acquires individuals for the given IRI.
 
     Args:
-        iri (string): The IRI to query individuals for.
+        tenant (string): Tenant id to access API.
         username (string): Username to access API.
         password (string): Password to access API.
+        iri (string): The IRI to query individuals for.
         show_table (bool, optional): Flag for displaying the table. Defaults to True.
 
     Returns:
@@ -242,6 +243,7 @@ def load_model(tenant, username, password):
     """It acquires model for the notebook.
 
     Args:
+        tenant (string): Tenant id to access API.
         username (string): Username to access API.
         password (string): Password to access API.
 
@@ -312,8 +314,8 @@ def get_all_classes(source_df, language='en', show_table=True):
 
 def get_classes_by_iris(source_df,
                         iris,
-                        show_subclasses=True,
                         show_superclasses=True,
+                        show_subclasses=True,
                         language='en',
                         show_table=True):
     """It extracts classes based on give IRIs along with the relations.
@@ -330,6 +332,7 @@ def get_classes_by_iris(source_df,
     Returns:
         DataFrame: The DataFrame holding the the queried IRIs.
     """
+    iris = list(set(iris))
     extracted_df = source_df.copy()
     extracted_df = extracted_df[(extracted_df['Language'] == language) &
                                 (extracted_df['Superclass Language'].isin(
@@ -380,13 +383,14 @@ def get_classes_by_iris(source_df,
 
     return resultant_df
 
-def get_properties(iri, tenant, username, password, show_table=True, raw=False):
+def get_properties(tenant, username, password, iri, show_table=True, raw=False):
     """It acquires propeties for the given IRI.
 
     Args:
-        iri (string): The IRI to acquire properties for.
+        tenant (string): Tenant id to access API.
         username (string): Username to access API.
         password (string): Password to access API.
+        iri (string): The IRI to acquire properties for.
         show_table (bool, optional): Flag for displaying the table. Defaults to True.
         raw (bool, optional): Flag to get raw data or its DataFrame. Defaults to False.
 
@@ -497,28 +501,27 @@ def get_description(source_df, iri, language='en', show_table=True):
 
     return resultant_df
 
-def visualize(tenant,
-              username,
-              password,
-              source_df,
-              iris,
-              show_properties=False,
-              show_subclasses=True,
-              show_superclasses=True,
-              language='en',
-              verbose=True):
-    """It generates a Network object for the given list of IRIs.
+def visualize_hierarchy(tenant,
+                        username,
+                        password,
+                        source_df,
+                        iris,
+                        show_superclasses,
+                        show_subclasses,
+                        language,
+                        verbose):
+
+    """It generates a Network object of the hierarchy for the given list of IRIs.
 
     Args:
+        tenant (string): Tenant id to access API.
         username (string): Username to access API.
         password (string): Password to access API.
         source_df (DataFrame): Primary DataFrame to query from.
         iris (list): List of IRIs to query.
         title (str, optional): Title of the graph. Defaults to 'Network Graph'.
-        show_properties (bool, optional): Flag to add properties to the network object. Defaults to False.
-        show_legend (bool, optional): Flag to display legend. Defaults to True.
-        show_subclasses (bool, optional): Flag to extract subclasses for the queried IRIs. Defaults to True.
         show_superclasses (bool, optional): Flag to extract superclasses for the queried IRIs. Defaults to True.
+        show_subclasses (bool, optional): Flag to extract subclasses for the queried IRIs. Defaults to True.
         language (str, optional): Language to query for. Could accept either of these: 'en', 'de' and 'fr'.
         Defaults to 'en'.
         verbose (bool, optional): Flag to display extended tooltip. Defaults to True.
@@ -526,6 +529,71 @@ def visualize(tenant,
     Returns:
         Network: The Network object loaded with nodes and edges to display.
     """
+    graph = __visualize__(tenant,
+                          username,
+                          password,
+                          source_df,
+                          iris,
+                          show_superclasses=show_superclasses,
+                          show_subclasses=show_subclasses,
+                          show_properties=False,
+                          language=language,
+                          verbose=verbose)
+    return graph
+
+def visualize_properties(tenant,
+                        username,
+                        password,
+                        source_df,
+                        iris,
+                        show_superclasses,
+                        show_subclasses,
+                        language='en',
+                        verbose=True):
+    """It generates a Network object of the properties for the given list of IRIs.
+
+    Args:
+        tenant (string): Tenant id to access API.
+        username (string): Username to access API.
+        password (string): Password to access API.
+        source_df (DataFrame): Primary DataFrame to query from.
+        iris (list): List of IRIs to query.
+        title (str, optional): Title of the graph. Defaults to 'Network Graph'.
+        show_superclasses (bool, optional): Flag to extract superclasses for the queried IRIs. Defaults to True.
+        show_subclasses (bool, optional): Flag to extract subclasses for the queried IRIs. Defaults to True.
+        language (str, optional): Language to query for. Could accept either of these: 'en', 'de' and 'fr'.
+        Defaults to 'en'.
+        verbose (bool, optional): Flag to display extended tooltip. Defaults to True.
+
+    Returns:
+        Network: The Network object loaded with nodes and edges to display.
+    """
+    
+    graph = __visualize__(tenant,
+                          username,
+                          password,
+                          source_df,
+                          iris,
+                          show_superclasses,
+                          show_subclasses,
+                          show_properties=True,
+                          language='en',
+                          verbose=True)
+    return graph
+
+def __visualize__(tenant,
+                  username,
+                  password,
+                  source_df,
+                  iris,
+                  show_superclasses=True,
+                  show_subclasses=True,
+                  show_properties=False,
+                  language='en',
+                  verbose=True):
+    
+    iris = list(set(iris))
+    
     def format_description(description):
 
         if description:
