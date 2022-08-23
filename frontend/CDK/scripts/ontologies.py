@@ -312,7 +312,7 @@ def get_all_classes(source_df, language='en', show_table=True):
 
     return resultant_df
 
-def get_classes_by_iris(source_df,
+def get_hierarchy(source_df,
                         iris,
                         show_superclasses=True,
                         show_subclasses=True,
@@ -367,14 +367,9 @@ def get_classes_by_iris(source_df,
 
     resultant_df.reset_index(drop=True, inplace=True)
 
-    labels = __extract_labels_from_iris__(iris=iris)
-
     if show_table:
-        title = ', '.join(labels)
-        if len(labels) > 1:
-            title = 'Class hierarchy of ' + title
-        else:
-            title = 'Class hierarchy of ' + title
+        labels = __extract_labels_from_iris__(iris=iris)
+        title = 'Class hierarchy of '+', '.join(labels)
 
         show(df=resultant_df,
              columnDefs=[ITABLE_COLDEF],
@@ -462,11 +457,11 @@ def get_properties(tenant, username, password, iri, show_table=True, raw=False):
         show(df=properties,
              columnDefs=[ITABLE_COLDEF],
              eval_functions=True,
-             tags=ITABLE_TITLE.format(title=f'Properties with domain {label}'))
+             tags=ITABLE_TITLE.format(title=f'Properties of class {label}'))
 
     return properties
 
-def get_description(source_df, iri, language='en', show_table=True):
+def get_description(source_df, iris, language='en', show_table=True):
     """It extarcts descriptions for the given IRI.
 
     Args:
@@ -478,26 +473,37 @@ def get_description(source_df, iri, language='en', show_table=True):
     Returns:
         DataFrame: The DataFrame holding the the description of class.
     """
-    resultant_df = source_df.copy()
-    resultant_df = resultant_df[(resultant_df['Language'] == language) & (
-        resultant_df['IRI'] == iri)]
+    iris = list(set(iris))
+    extracted_df = source_df.copy()
+    extracted_df = extracted_df[extracted_df['Language'] == language]
+    resultant_df = pd.DataFrame()
+
+    for iri in iris:
+        description_df = extracted_df.copy()[extracted_df['IRI'] == iri]
+        resultant_df = pd.concat([resultant_df, description_df])
 
     language = LANGUAGE_ACRONYMS.get(language, 'Undefined')
 
     resultant_df.drop_duplicates(subset='IRI', inplace=True)
     resultant_df = resultant_df[resultant_df.columns[resultant_df.columns.isin(
-        ['Label', f'Description({language})',  'IRI'])]]
+        ['Label', f'Description({language})'])]]
     resultant_df.rename(
         columns={f'Description({language})': 'dcterms:description'}, inplace=True)
     resultant_df.reset_index(drop=True, inplace=True)
 
-    label = __extract_labels_from_iris__(iris=[iri])[0]
-
     if show_table:
+        labels = __extract_labels_from_iris__(iris=iris)
+        title = ', '.join(labels)
+
+        if len(labels) > 1:
+            title = f'Description of classes {title}'
+        else:
+            title = f'Description of class {title}'
+
         show(df=resultant_df,
              columnDefs=[ITABLE_COLDEF],
              eval_functions=True,
-             tags=ITABLE_TITLE.format(title=f'Description of class {label}'))
+             tags=ITABLE_TITLE.format(title=title))
 
     return resultant_df
 
@@ -509,7 +515,7 @@ def visualize_hierarchy(tenant,
                         show_superclasses,
                         show_subclasses,
                         language,
-                        verbose):
+                        verbose_tooltips=False):
 
     """It generates a Network object of the hierarchy for the given list of IRIs.
 
@@ -524,7 +530,7 @@ def visualize_hierarchy(tenant,
         show_subclasses (bool, optional): Flag to extract subclasses for the queried IRIs. Defaults to True.
         language (str, optional): Language to query for. Could accept either of these: 'en', 'de' and 'fr'.
         Defaults to 'en'.
-        verbose (bool, optional): Flag to display extended tooltip. Defaults to True.
+        verbose_tooltips (bool, optional): Flag to display extended tooltip. Defaults to True.
 
     Returns:
         Network: The Network object loaded with nodes and edges to display.
@@ -538,7 +544,7 @@ def visualize_hierarchy(tenant,
                           show_subclasses=show_subclasses,
                           show_properties=False,
                           language=language,
-                          verbose=verbose)
+                          verbose_tooltips=verbose_tooltips)
     return graph
 
 def visualize_properties(tenant,
@@ -546,10 +552,11 @@ def visualize_properties(tenant,
                         password,
                         source_df,
                         iris,
-                        show_superclasses,
-                        show_subclasses,
-                        language='en',
-                        verbose=True):
+                        language,
+                        show_superclasses=False,
+                        show_subclasses=False,
+                        verbose_tooltips=False):
+
     """It generates a Network object of the properties for the given list of IRIs.
 
     Args:
@@ -563,22 +570,22 @@ def visualize_properties(tenant,
         show_subclasses (bool, optional): Flag to extract subclasses for the queried IRIs. Defaults to True.
         language (str, optional): Language to query for. Could accept either of these: 'en', 'de' and 'fr'.
         Defaults to 'en'.
-        verbose (bool, optional): Flag to display extended tooltip. Defaults to True.
+        verbose_tooltips (bool, optional): Flag to display extended tooltip. Defaults to True.
 
     Returns:
         Network: The Network object loaded with nodes and edges to display.
     """
     
-    graph = __visualize__(tenant,
-                          username,
-                          password,
-                          source_df,
-                          iris,
-                          show_superclasses,
-                          show_subclasses,
+    graph = __visualize__(tenant=tenant,
+                          username=username,
+                          password=password,
+                          source_df=source_df,
+                          iris=iris,
+                          show_superclasses=show_superclasses,
+                          show_subclasses=show_subclasses,
                           show_properties=True,
-                          language='en',
-                          verbose=True)
+                          language=language,
+                          verbose_tooltips=verbose_tooltips)
     return graph
 
 def __visualize__(tenant,
@@ -590,7 +597,7 @@ def __visualize__(tenant,
                   show_subclasses=True,
                   show_properties=False,
                   language='en',
-                  verbose=True):
+                  verbose_tooltips=True):
     
     iris = list(set(iris))
     
@@ -666,22 +673,29 @@ def __visualize__(tenant,
         }
 
         return data
-    if show_properties:
+    
+    labels = __extract_labels_from_iris__(iris=iris)
+    
+    if show_properties: 
         prefix = 'Figure: Properties of class '
+        if len(labels) > 1:
+            prefix = 'Figure: Properties of classes '
     else:
         prefix = 'Figure: Class hierarchy of '
-    if len(iris) == 1:
-        title = prefix+iris[0].split('#')[-1]
-    else:
-        title = ', '.join([iri.split('#')[-1] for iri in iris])
-        title = prefix+title
+    
+    title = prefix+', '.join(labels)
+    # if len(iris) == 1:
+    #     title = prefix+iris[0].split('#')[-1]
+    # else:
+    #     title = ', '.join([iri.split('#')[-1] for iri in iris])
+    #     title = prefix+title
     # Creating a Network object
     network = Network(height='800px', width='100%',
                       directed=True, notebook=True, heading=title)
     network.repulsion(node_distance=300, spring_length=300)
 
     # Acquiring required DataFrame
-    resultant_df = get_classes_by_iris(source_df=source_df,
+    resultant_df = get_hierarchy(source_df=source_df,
                                        iris=iris,
                                        show_subclasses=show_subclasses,
                                        show_superclasses=show_superclasses,
@@ -731,7 +745,7 @@ def __visualize__(tenant,
                                                      password=password
                                                     )
             # Adding properties to tooltip
-            if verbose:
+            if verbose_tooltips:
                 node.update({'tooltip': node.get('tooltip') +
                             format_properties(all_properties)})
 
@@ -762,7 +776,7 @@ def __visualize__(tenant,
                             node.update(
                                 {'tooltip': format_description(description)})
 
-                            if verbose:
+                            if verbose_tooltips:
                                 all_properties = __accquire_properties__(iri=range_,
                                                                          tenant=tenant,
                                                                          username=username,
