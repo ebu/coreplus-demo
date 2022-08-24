@@ -39,7 +39,7 @@ git lfs install
 For git lfs installation you can refer to this link as well [https://git-lfs.github.com/](https://git-lfs.github.com/) 
 
 
-> Note: **Also, for MAC OS please make sure docker desktop has coreplus-demo folder in its filesharing otherwise the containers could not be created if the folder is not added to filesharing of doker desktop. To add coreplus-demo to docker desktop fileshring you can follow this [wiki-page](https://github.com/ebu/coreplus-demo/wiki/Add-corelus-demo-to-Doker-Desktop as well.**
+> Note: **Also, for MAC OS please make sure docker desktop has coreplus-demo folder in its filesharing otherwise the containers could not be created if the folder is not added to filesharing of doker desktop. To add coreplus-demo to docker desktop fileshring you can follow this [wiki-page](https://github.com/ebu/coreplus-demo/wiki/Add-corelus-demo-to-Doker-Desktop) as well.**
 
 
 ## Installation
