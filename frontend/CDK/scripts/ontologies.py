@@ -30,6 +30,7 @@ def __flatten__(data, parent={}):
 
     return resultant
 
+
 def __get_access_token__(tenant, username, password):
 
     url = f'{URL}/auth/realms/{tenant}/protocol/openid-connect/token'
@@ -53,6 +54,7 @@ def __get_access_token__(tenant, username, password):
 
     return access_token
 
+
 def __get_classes__(access_token):
 
     url = f'{URL}{ENAPSO_NAMESPACE}/v1/get-all-classes'
@@ -67,7 +69,8 @@ def __get_classes__(access_token):
             'graph':  GRAPH,
         }
 
-        response = requests.post(url=url, headers=headers, json=body, timeout=300)
+        response = requests.post(
+            url=url, headers=headers, json=body, timeout=300)
         response.raise_for_status()
     except requests.exceptions.RequestException as exception:
         sys.stdout.write(exception)
@@ -77,6 +80,7 @@ def __get_classes__(access_token):
     classes = __flatten__(classes.get('records'))
 
     return classes
+
 
 def __get_descriptions__(access_token):
 
@@ -91,7 +95,8 @@ def __get_descriptions__(access_token):
         body = {
             'graph': GRAPH,
         }
-        response = requests.post(url=url, headers=headers, json=body, timeout=300)
+        response = requests.post(
+            url=url, headers=headers, json=body, timeout=300)
         response.raise_for_status()
     except requests.exceptions.RequestException as exception:
         sys.stdout.write(str(exception))
@@ -116,6 +121,7 @@ def __get_descriptions__(access_token):
 
     return descriptions_
 
+
 def __remove_nans__(df):
 
     for coulmn in list(df.columns):
@@ -123,11 +129,13 @@ def __remove_nans__(df):
 
     return df
 
+
 def __extract_labels_from_iris__(iris):
 
     labels = [iri.split('#')[-1] for iri in iris if iri]
 
     return labels
+
 
 def __accquire_properties__(tenant, username, password, iri):
 
@@ -167,15 +175,19 @@ def __accquire_properties__(tenant, username, password, iri):
 
     return properties_
 
+
 def __accquire_description__(tenant, username, password):
 
-    access_token = __get_access_token__(tenant=tenant, username=username, password=password)
+    access_token = __get_access_token__(
+        tenant=tenant, username=username, password=password)
 
     descriptions = __get_descriptions__(access_token=access_token)
 
     return descriptions
 
+
 def itable_config(opt, init_notebook_mode):
+
     """A callable-only function to configure itable for notebook.
 
     Args:
@@ -188,7 +200,9 @@ def itable_config(opt, init_notebook_mode):
     opt.classes = ['cell-border', 'stripe', 'hover']
     init_notebook_mode(all_interactive=True)
 
+
 def get_individuals(tenant, username, password, iri, show_table=True):
+
     """It acquires individuals for the given IRI.
 
     Args:
@@ -204,7 +218,8 @@ def get_individuals(tenant, username, password, iri, show_table=True):
 
     url = f'{URL}{INDIVIDUAL_NAMESPACE}/v1/read-individual'
 
-    access_token = __get_access_token__(tenant=tenant, username=username, password=password)
+    access_token = __get_access_token__(
+        tenant=tenant, username=username, password=password)
 
     headers = {
         'Content-Type': 'application/json',
@@ -213,7 +228,8 @@ def get_individuals(tenant, username, password, iri, show_table=True):
 
     try:
         body = {'cls': iri}
-        response = requests.post(url=url, headers=headers, json=body, timeout=300)
+        response = requests.post(
+            url=url, headers=headers, json=body, timeout=300)
         response.raise_for_status()
     except requests.exceptions.RequestException as exception:
         return False, str(exception)
@@ -223,14 +239,14 @@ def get_individuals(tenant, username, password, iri, show_table=True):
     individuals_df = pd.DataFrame(data=individuals)
 
     label = iri.split('#')[-1]
-    
+
     alterantives = {
         'iri': 'IRI',
         'alternativeTitle': 'ec:alternativeTitle',
         'contentDescription': 'ec:contentDescription'
     }
     individuals_df.rename(columns=alterantives, inplace=True)
-    
+
     if show_table:
         show(df=individuals_df,
              columnDefs=[ITABLE_COLDEF],
@@ -239,7 +255,9 @@ def get_individuals(tenant, username, password, iri, show_table=True):
 
     return individuals_df
 
+
 def load_model(tenant, username, password):
+
     """It acquires model for the notebook.
 
     Args:
@@ -270,7 +288,8 @@ def load_model(tenant, username, password):
 
                     element.update({f'Description({key})': value})
 
-    access_token = __get_access_token__(tenant=tenant, username=username, password=password)
+    access_token = __get_access_token__(
+        tenant=tenant, username=username, password=password)
 
     if not access_token:
         return None
@@ -284,7 +303,9 @@ def load_model(tenant, username, password):
 
     return classes_df
 
+
 def get_all_classes(source_df, language='en', show_table=True):
+
     """It extracts a unique DataFrame of classes from the given DataFrame.
 
     Args:
@@ -312,19 +333,21 @@ def get_all_classes(source_df, language='en', show_table=True):
 
     return resultant_df
 
+
 def get_hierarchy(source_df,
-                        iris,
-                        show_superclasses=True,
-                        show_subclasses=True,
-                        language='en',
-                        show_table=True):
+                  iris,
+                  show_superclasses=True,
+                  show_subclasses=True,
+                  language='en',
+                  show_table=True):
+
     """It extracts classes based on give IRIs along with the relations.
 
     Args:
         source_df (DataFrame): Primary DataFrame to query from.
         iris (list): List of IRIs to query.
-        show_subclasses (bool, optional): Flag to extract subclasses. Defaults to True.
         show_superclasses (bool, optional): Flag to extract superclasses. Defaults to True.
+        show_subclasses (bool, optional): Flag to extract subclasses. Defaults to True.
         language (str, optional): Language to query for. Could accept either of these: 'en',
         'de' and 'fr'. Defaults to 'en'.
         show_table (bool, optional): Flag to display the table. Defaults to True.
@@ -332,6 +355,7 @@ def get_hierarchy(source_df,
     Returns:
         DataFrame: The DataFrame holding the the queried IRIs.
     """
+
     iris = list(set(iris))
     extracted_df = source_df.copy()
     extracted_df = extracted_df[(extracted_df['Language'] == language) &
@@ -378,7 +402,9 @@ def get_hierarchy(source_df,
 
     return resultant_df
 
+
 def get_properties(tenant, username, password, iri, show_table=True, raw=False):
+
     """It acquires propeties for the given IRI.
 
     Args:
@@ -392,7 +418,9 @@ def get_properties(tenant, username, password, iri, show_table=True, raw=False):
     Returns:
         DataFrame: The DataFrame holding the properties.
     """
-    access_token = __get_access_token__(tenant=tenant, username=username, password=password)
+
+    access_token = __get_access_token__(
+        tenant=tenant, username=username, password=password)
 
     url = f'{URL}{ENAPSO_NAMESPACE}/v1/get-class-own-properties'
 
@@ -403,7 +431,8 @@ def get_properties(tenant, username, password, iri, show_table=True, raw=False):
 
     try:
         body = {'cls': iri}
-        response = requests.post(url=url, headers=headers, json=body, timeout=300)
+        response = requests.post(
+            url=url, headers=headers, json=body, timeout=300)
         response.raise_for_status()
 
     except requests.exceptions.RequestException as exception:
@@ -461,18 +490,20 @@ def get_properties(tenant, username, password, iri, show_table=True, raw=False):
 
     return properties
 
+
 def get_description(source_df, iris, language='en', show_table=True):
     """It extarcts descriptions for the given IRI.
 
     Args:
         source_df (DataFrame): Primary DataFrame to query from.
-        iri (string): IRI to query description for.
+        iris (list): IRIs to query description for.
         language (str, optional): Language to query for. Defaults to 'en'.
         show_table (bool, optional): Flag to display the table. Defaults to True.
 
     Returns:
         DataFrame: The DataFrame holding the the description of class.
     """
+
     iris = list(set(iris))
     extracted_df = source_df.copy()
     extracted_df = extracted_df[extracted_df['Language'] == language]
@@ -507,14 +538,15 @@ def get_description(source_df, iris, language='en', show_table=True):
 
     return resultant_df
 
+
 def visualize_hierarchy(tenant,
                         username,
                         password,
                         source_df,
                         iris,
+                        language,
                         show_superclasses,
                         show_subclasses,
-                        language,
                         verbose_tooltips=False):
 
     """It generates a Network object of the hierarchy for the given list of IRIs.
@@ -525,16 +557,16 @@ def visualize_hierarchy(tenant,
         password (string): Password to access API.
         source_df (DataFrame): Primary DataFrame to query from.
         iris (list): List of IRIs to query.
-        title (str, optional): Title of the graph. Defaults to 'Network Graph'.
+        language (str, optional): Language to query for. Could accept either of these: 'en', 'de' and 'fr'.
         show_superclasses (bool, optional): Flag to extract superclasses for the queried IRIs. Defaults to True.
         show_subclasses (bool, optional): Flag to extract subclasses for the queried IRIs. Defaults to True.
-        language (str, optional): Language to query for. Could accept either of these: 'en', 'de' and 'fr'.
         Defaults to 'en'.
         verbose_tooltips (bool, optional): Flag to display extended tooltip. Defaults to True.
 
     Returns:
         Network: The Network object loaded with nodes and edges to display.
     """
+
     graph = __visualize__(tenant,
                           username,
                           password,
@@ -547,16 +579,17 @@ def visualize_hierarchy(tenant,
                           verbose_tooltips=verbose_tooltips)
     return graph
 
-def visualize_properties(tenant,
-                        username,
-                        password,
-                        source_df,
-                        iris,
-                        language,
-                        show_superclasses=False,
-                        show_subclasses=False,
-                        verbose_tooltips=False):
 
+def visualize_properties(tenant,
+                         username,
+                         password,
+                         source_df,
+                         iris,
+                         language,
+                         show_superclasses=False,
+                         show_subclasses=False,
+                         verbose_tooltips=False):
+                         
     """It generates a Network object of the properties for the given list of IRIs.
 
     Args:
@@ -565,17 +598,16 @@ def visualize_properties(tenant,
         password (string): Password to access API.
         source_df (DataFrame): Primary DataFrame to query from.
         iris (list): List of IRIs to query.
-        title (str, optional): Title of the graph. Defaults to 'Network Graph'.
+        language (str, optional): Language to query for. Could accept either of these: 'en', 'de' and 'fr'.
         show_superclasses (bool, optional): Flag to extract superclasses for the queried IRIs. Defaults to True.
         show_subclasses (bool, optional): Flag to extract subclasses for the queried IRIs. Defaults to True.
-        language (str, optional): Language to query for. Could accept either of these: 'en', 'de' and 'fr'.
         Defaults to 'en'.
         verbose_tooltips (bool, optional): Flag to display extended tooltip. Defaults to True.
 
     Returns:
         Network: The Network object loaded with nodes and edges to display.
     """
-    
+
     graph = __visualize__(tenant=tenant,
                           username=username,
                           password=password,
@@ -588,6 +620,7 @@ def visualize_properties(tenant,
                           verbose_tooltips=verbose_tooltips)
     return graph
 
+
 def __visualize__(tenant,
                   username,
                   password,
@@ -598,9 +631,9 @@ def __visualize__(tenant,
                   show_properties=False,
                   language='en',
                   verbose_tooltips=True):
-    
+
     iris = list(set(iris))
-    
+
     def format_description(description):
 
         if description:
@@ -673,22 +706,18 @@ def __visualize__(tenant,
         }
 
         return data
-    
+
     labels = __extract_labels_from_iris__(iris=iris)
-    
-    if show_properties: 
+
+    if show_properties:
         prefix = 'Figure: Properties of class '
         if len(labels) > 1:
             prefix = 'Figure: Properties of classes '
     else:
         prefix = 'Figure: Class hierarchy of '
-    
+
     title = prefix+', '.join(labels)
-    # if len(iris) == 1:
-    #     title = prefix+iris[0].split('#')[-1]
-    # else:
-    #     title = ', '.join([iri.split('#')[-1] for iri in iris])
-    #     title = prefix+title
+
     # Creating a Network object
     network = Network(height='800px', width='100%',
                       directed=True, notebook=True, heading=title)
@@ -696,11 +725,11 @@ def __visualize__(tenant,
 
     # Acquiring required DataFrame
     resultant_df = get_hierarchy(source_df=source_df,
-                                       iris=iris,
-                                       show_subclasses=show_subclasses,
-                                       show_superclasses=show_superclasses,
-                                       language=language,
-                                       show_table=False)
+                                 iris=iris,
+                                 show_subclasses=show_subclasses,
+                                 show_superclasses=show_superclasses,
+                                 language=language,
+                                 show_table=False)
 
     # Acquiring descriptions for all classes
     descriptions = __accquire_description__(
@@ -743,7 +772,7 @@ def __visualize__(tenant,
                                                      tenant=tenant,
                                                      username=username,
                                                      password=password
-                                                    )
+                                                     )
             # Adding properties to tooltip
             if verbose_tooltips:
                 node.update({'tooltip': node.get('tooltip') +
