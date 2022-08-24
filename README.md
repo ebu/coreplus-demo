@@ -129,7 +129,7 @@ To install the local version we will go to the terminal in the coreplus-demo dir
 
 
 
-For Widnows
+For Windows
 ```bash
 docker-compose -f .\docker-compose-local.yml up -d
 ```
