@@ -21,12 +21,14 @@ For hybrid and local installation, we would need to have Prerequisites fulfilled
 
 Docker Desktop for Windows or Mac includes Docker Compose. Run this command to verify:
 
+> Note: **The Docker Desktop version should be at 4.5.0 or above**
+
+
 ```sh
 docker-compose version
 ```
 
 If you use the Linux operating system, Install [Docker Compose](https://docs.docker.com/compose/install/).
-
 
 **As there are large files to be cloned to run the local installation we would need git lfs extension for this.**
 
@@ -37,6 +39,9 @@ git lfs install
 ``
 
 For git lfs installation you can refer to this link as well [https://git-lfs.github.com/](https://git-lfs.github.com/) 
+
+
+> Note: **Also, for MAC OS please make sure docker desktop has coreplus-demo folder in its file sharing otherwise the containers could not be created . To add coreplus-demo to docker desktop fileshring you can follow this [wiki-page](https://github.com/ebu/coreplus-demo/wiki/Add-corelus-demo-to-Doker-Desktop) as well.**
 
 
 ## Installation
@@ -126,7 +131,7 @@ To install the local version we will go to the terminal in the coreplus-demo dir
 
 
 
-For Widnows
+For Windows
 ```bash
 docker-compose -f .\docker-compose-local.yml up -d
 ```

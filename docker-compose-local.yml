@@ -74,7 +74,6 @@ services:
       restart_policy:
         condition: on-failure
         max_attempts: 4
-        window: 200s
     volumes:
       - ./backend/services/cache-management:/app/services/cache-management:rw
     ports:
@@ -98,7 +97,6 @@ services:
       restart_policy:
         condition: on-failure
         max_attempts: 4
-        window: 200s
     volumes:
       - ./backend/services/individual-management:/app/services/individual-management:ro
     ports:
@@ -119,7 +117,6 @@ services:
       restart_policy:
         condition: on-failure
         max_attempts: 4
-        window: 200s
     volumes:
       - ./backend/services/sparql-assistant:/app/services/sparql-assistant:ro
     ports:
@@ -140,7 +137,6 @@ services:
       restart_policy:
         condition: on-failure
         max_attempts: 4
-        window: 200s
     volumes:
       - ./backend/services/ontology-management:/app/services/ontology-management:ro
     ports:
@@ -161,7 +157,6 @@ services:
       restart_policy:
         condition: on-failure
         max_attempts: 4
-        window: 200s
     volumes:
       - ./backend/services/tenant-management:/app/services/tenant-management:rw
     ports:
@@ -185,7 +180,6 @@ services:
       restart_policy:
         condition: on-failure
         max_attempts: 4
-        window: 200s
     volumes:
       - ./backend/services/api-assistant:/app/services/api-assistant:ro
     ports:
@@ -206,7 +200,6 @@ services:
       restart_policy:
         condition: on-failure
         max_attempts: 4
-        window: 200s
     volumes:
       - ./backend/services/graphdb-management:/app/services/graphdb-management:ro
     ports:
@@ -227,7 +220,6 @@ services:
       restart_policy:
         condition: on-failure
         max_attempts: 4
-        window: 200s
     volumes:
       - ./backend/services/cdk-backend:/app/services/cdk-backend:rw
     ports:
