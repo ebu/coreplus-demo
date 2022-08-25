@@ -21,7 +21,7 @@ For hybrid and local installation, we would need to have Prerequisites fulfilled
 
 Docker Desktop for Windows or Mac includes Docker Compose. Run this command to verify:
 
-> Note: **The Docker version should be 20.10 or above**
+> Note: **The Docker Desktop version should be at 4.5.0 or above**
 
 
 ```sh
