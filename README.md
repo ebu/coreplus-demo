@@ -21,12 +21,14 @@ For hybrid and local installation, we would need to have Prerequisites fulfilled
 
 Docker Desktop for Windows or Mac includes Docker Compose. Run this command to verify:
 
+> Note: **The Docker version should be 20.10 or above**
+
+
 ```sh
 docker-compose version
 ```
 
 If you use the Linux operating system, Install [Docker Compose](https://docs.docker.com/compose/install/).
-
 
 **As there are large files to be cloned to run the local installation we would need git lfs extension for this.**
 
