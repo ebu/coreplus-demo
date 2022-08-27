@@ -19,7 +19,8 @@ RUN rm -rf requirements.txt
 COPY ./CDK /joyvan/
 
 # Configuring Jupter Lab
-RUN jupyter trust Demo.ipynb
+RUN jupyter trust Demo-reference.ipynb
+RUN jupyter trust Demo-xxxxx.ipynb
 EXPOSE 8888
 
 ENTRYPOINT ["jupyter-lab", "--ip=0.0.0.0", "--NotebookApp.token=FL32DqxQz6BGQkZjY4ue3MP2EmbSsN5CFqmdPfivtRBD5KKfwr3vwB3zGpYY", "--allow-root", "--no-browser" ]
