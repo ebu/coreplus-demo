@@ -17,8 +17,8 @@ ITABLE_COLDEF = {
         function (td, cellData, rowData, row, col) {{
             $(td).css('word-wrap', 'break-word')
             if (typeof cellData === 'string') {{
-                if (cellData === '1.0' ) {{
-                    $(td).html('1')
+                if (cellData.includes('1.0')) {{
+                    $(td).html(cellData.replace('.0', '' ))
                 }}
             }}
             if (cellData == false) {{
