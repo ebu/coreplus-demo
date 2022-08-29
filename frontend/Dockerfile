@@ -23,4 +23,9 @@ RUN jupyter trust Demo-reference.ipynb
 RUN jupyter trust Demo-xxxxx.ipynb
 EXPOSE 8888
 
+# Changing file permissions
+RUN chmod 0444 Demo-xxxxx.ipynb
+RUN chmod 0444 scripts/config.py
+RUN chmod 0444 scripts/ontologies.py
+
 ENTRYPOINT ["jupyter-lab", "--ip=0.0.0.0", "--NotebookApp.token=FL32DqxQz6BGQkZjY4ue3MP2EmbSsN5CFqmdPfivtRBD5KKfwr3vwB3zGpYY", "--allow-root", "--no-browser" ]
