@@ -36,8 +36,10 @@ ITABLE_COLDEF = {
 SUPERCLASS_COLOR = '#ABEBC6'
 SUBCLASS_COLOR = '#ACF'
 PROPERTY_EDGE_COLOR = '#000'
-FIXED_LEGEND = 'https://image-assets-for-cdk.s3.eu-central-1.amazonaws.com/legend_for_cell.png'
-ITABLE_TITLE = '<h4><label style="font-weight:bold">Table: </label><label>{title}</label></h4>'
+FIXED_LEGEND = ('https://image-assets-for-cdk.s3.eu-central-1.amazonaws.com/'
+'legend_for_cell.png')
+ITABLE_TITLE = ('<h4><label style="font-weight:bold">Table: </label><label>'
+'{title}</label></h4>')
 
 # Config vars for APIs
 URL = os.getenv('URL', 'https://ebucore-plus-dk.org')

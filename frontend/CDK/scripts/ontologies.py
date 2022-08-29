@@ -11,7 +11,8 @@ def __validate_args__(arg, flat=False):
 
     if not flat:
         if not arg or '' in arg:
-            raise ValueError('List of IRIs can not be empty or contain an empty string.')
+            raise ValueError('List of IRIs can not be empty or contain' +
+                             'an empty string.')
     else:
         if '' == arg:
             raise ValueError('IRI can not be an empty string.')
@@ -713,7 +714,8 @@ def __visualize__(tenant,
                 count_ = count+1
             elif count == 3:
                 tooltip_ += '...'
-        tooltip_ = f'\n\nDatatype Properties: [{count_}/{len(properties_)}]\n' + \
+        tooltip_ = f'\n\nDatatype Properties:' + \
+            '[{count_}/{len(properties_)}]\n' + \
             tooltip_
 
         count_ = 0
@@ -742,7 +744,8 @@ def __visualize__(tenant,
             subset=['IRI', 'Superclass IRIs'], inplace=True)
         if not extracted_df.empty:
             label = extracted_df['Label'].values[0]
-            color = SUPERCLASS_COLOR if extracted_df['IsLeafClass'].values[0] else SUBCLASS_COLOR
+            color = SUPERCLASS_COLOR if extracted_df['IsLeafClass'].values[0] \
+                else SUBCLASS_COLOR
         else:
             label = iri.split('#')[-1]
             color = SUPERCLASS_COLOR
@@ -807,7 +810,8 @@ def __visualize__(tenant,
                 'node_id': iri,
                 'label': row.get('Label'),
                 'tooltip': format_description(description),
-                'color': SUPERCLASS_COLOR if row.get('IsLeafClass', False) else SUBCLASS_COLOR,
+                'color': SUPERCLASS_COLOR if row.get('IsLeafClass', False)
+                else SUBCLASS_COLOR,
                 'shape': CLASS_SHAPE,
                 'size': NODE_SIZE,
                 'reset': False
