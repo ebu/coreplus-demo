@@ -24,7 +24,7 @@ RUN jupyter trust Demo-xxxxx.ipynb
 EXPOSE 8888
 
 # Changing file permissions
-RUN chmod 0444 Demo.ipynb
+RUN chmod 0444 Demo-reference.ipynb
 RUN chmod 0444 scripts/config.py
 RUN chmod 0444 scripts/ontologies.py
 
