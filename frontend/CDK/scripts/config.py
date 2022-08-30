@@ -16,8 +16,10 @@ ITABLE_COLDEF = {
     "createdCell": """
         function (td, cellData, rowData, row, col) {{
             $(td).css('word-wrap', 'break-word')
-            if (cellData === '1.0' ) {{
-                $(td).html('1')
+            if (typeof cellData === 'string') {{
+                if (cellData.includes('1.0')) {{
+                    $(td).html(cellData.replace('.0', '' ))
+                }}
             }}
             if (cellData == false) {{
                 $(td).css('color', '{superclass_color}')
@@ -34,8 +36,10 @@ ITABLE_COLDEF = {
 SUPERCLASS_COLOR = '#ABEBC6'
 SUBCLASS_COLOR = '#ACF'
 PROPERTY_EDGE_COLOR = '#000'
-FIXED_LEGEND = 'https://image-assets-for-cdk.s3.eu-central-1.amazonaws.com/legend_for_cell.png'
-ITABLE_TITLE = '<h4 style="text-alignt:center"><label style="font-weight:bold">Table: </label><label>{title}</label></h4>'
+FIXED_LEGEND = ('https://image-assets-for-cdk.s3.eu-central-1.amazonaws.com/'
+'legend_for_cell.png')
+ITABLE_TITLE = ('<h4><label style="font-weight:bold">Table: </label><label>'
+'{title}</label></h4>')
 
 # Config vars for APIs
 URL = os.getenv('URL', 'https://ebucore-plus-dk.org')
