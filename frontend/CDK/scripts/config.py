@@ -34,7 +34,7 @@ ITABLE_COLDEF = {
         function (td, cellData, rowData, row, col) {{
             $(td).css('word-wrap', 'break-word')
             if (typeof cellData === 'string') {{
-                if (cellData.includes('.0')) {{
+                if (cellData.slice(-2) === '.0') {{
                     $(td).html(cellData.replace('.0', '' ))
                 }}
             }}
