@@ -19,8 +19,8 @@ RUN rm -rf requirements.txt
 COPY ./CDK /joyvan/
 
 # Configuring Jupter Lab
-RUN jupyter trust Demo-reference.ipynb
-RUN jupyter trust Demo-xxxxx.ipynb
+RUN jupyter trust Demo-shared.ipynb
+RUN jupyter trust Demo-template-for-duplication-do-not-modify.ipynb
 EXPOSE 8888
 
 # Changing file permissions
