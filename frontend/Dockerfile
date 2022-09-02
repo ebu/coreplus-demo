@@ -24,7 +24,7 @@ RUN jupyter trust Demo-template-for-duplication-do-not-modify.ipynb
 EXPOSE 8888
 
 # Changing file permissions
-RUN chmod 0444 Demo-reference.ipynb
+RUN chmod 0444 Demo-shared.ipynb
 RUN chmod 0444 scripts/config.py
 RUN chmod 0444 scripts/ontologies.py
 
