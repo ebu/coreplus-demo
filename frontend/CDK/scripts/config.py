@@ -57,6 +57,8 @@ BASE_URL = os.getenv('BASE_URL', BASE_URL)
 SOURCE_GRAPH = 'http://www.ebu.ch/metadata/ontologies/ebucore'
 ENAPSO_NAMESPACE = '/enapso-dev/ontology-management'
 INDIVIDUAL_NAMESPACE = '/enapso-dev/individual-management'
+TEMPLATE_NAMESPACE = '/enapso-dev/view-management'
+
 REQUEST_TIMEOUT = 300
 
 # Config vars for data

@@ -945,3 +945,86 @@ def __get_network_graph__(tenant,
                              arrowStrikethrough=True)
 
     return graph
+def get_individual_properties_graph(tenant, username, password, iri):
+    """It generates a Network object of the class properties for the given
+    list of IRIs.
+
+    Args:
+        tenant (string): Tenant id to access API.
+        username (string): Username to access API.
+        password (string): Password to access API.
+        source_df (DataFrame): Primary DataFrame to query from.
+        iris (list): List of IRIs to query.
+        language (str, optional): Language to query for. Could accept either
+        of these: 'en', 'de', and 'fr'.
+        Defaults to 'en'.
+        show_superclasses (bool, optional): Flag to extract superclasses
+        for the queried IRIs. Defaults to True.
+        show_subclasses (bool, optional): Flag to extract subclasses for the
+        queried IRIs. Defaults to True.
+        Defaults to 'en'.
+        verbose_tooltips (bool, optional): Flag to display extended tooltip.
+        Defaults to True.
+
+    Returns:
+        Network: The Network object loaded with nodes and edges to display.
+    """
+
+    graph = create_character_graph(tenant, username, password, iri)
+
+    return graph
+
+
+def create_character_graph(tenant, username, password, iri):
+
+    __validate_args__(arg=iri, flat=True)
+    net = Network(height=GRAPH_HEIGHT, width=GRAPH_WIDTH,
+                    directed=True,notebook=True)
+
+    net.repulsion(node_distance=NODE_DISTANCE, spring_length=SPRING_LENGTH)
+
+    url = f'{BASE_URL}{TEMPLATE_NAMESPACE}/v1/execute-template'
+
+    access_token = __get_access_token__(
+        tenant=tenant, username=username, password=password)
+
+    headers = {
+        'Content-Type': 'application/json',
+        'x-enapso-auth': access_token
+    }
+
+    try:
+        body = {
+            "template":  "http://ont.telekom.de/cia/sparql-template#SPARQLTemplate_2c08776d-ee35-4ac5-9d22-b4835d394e56",
+            'variables': {"individualIRI": iri}
+        }
+        response = requests.post(
+            url=url, headers=headers, json=body, timeout=REQUEST_TIMEOUT)
+        response.raise_for_status()
+    except requests.exceptions.RequestException as exception:
+        return False, str(exception)
+
+    individuals = response.json()
+    individuals = individuals.get('records')
+
+    if not individuals:
+        return net
+    
+    main_node_value = __get_name_from_iri__(individuals[0]['className'])
+
+    if main_node_value is None:
+        return net
+
+    net.add_node(main_node_value, title=iri , color="#fcfcfc" , size=50 )
+
+
+    for obj in individuals:
+        nodeTitle=f"{str(obj['propertyValue'])}\n({__get_name_from_iri__(obj['property'])})"
+        if obj['propertyType'] == "http://www.w3.org/2002/07/owl#DatatypeProperty":
+            net.add_node( nodeTitle, color=DATATYPE_NODE_COLOR, title="Data Property"  , size=40 )
+        else:
+            net.add_node(nodeTitle, color="#ABEBC6", title="Object Property", size= 40)
+        net.add_edge(main_node_value, nodeTitle)
+
+
+    return net

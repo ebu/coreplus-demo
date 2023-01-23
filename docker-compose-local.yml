@@ -230,6 +230,37 @@ services:
       - redis-master
     networks:
       - isolated-network
+  view-management-service:
+    container_name: vms
+    image: enapso/view-management-service
+    build:
+      context: ./services/view-management
+      dockerfile: Dockerfile
+    environment:
+      host: ebucore-plus-dk.org
+      schemes: https
+      security_authentication: keycloak
+      security_authorization: keycloak
+      graphdb_cache: local
+      graphdb_dbUrl: http://graphdb:7200
+      graphdb_triplestore: graphdb
+      graphdb_schema: Test
+      graphdb_user: admin
+      graphdb_pass: root
+      keycloak_host: http://keycloak:8080
+      redis_host: redis-master
+      redis_port: 6379
+      redis_password: CaVttOERn5
+    volumes:
+      - ./services/view-management:/app/services/view-management:ro
+    ports:
+      - 3009:3009
+    depends_on:
+      - graphdb
+      - keycloak
+      - redis-master
+    networks:
+      - isolated-network
   nginx:
     image: nginx:latest
     container_name: nginx

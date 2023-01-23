@@ -1,0 +1,23 @@
+{
+	"host": "enapso-demo.innotrade.com",
+	"schemes": "https",
+	"security": {
+		"authentication": "keycloak",
+		"authorization": "keycloak"
+	},
+	"graphdb": {
+		"cache": "local",
+		"dbUrl": "http://graphdb:7200",
+		"schema": "Test",
+		"user": "admin",
+		"pass": "root"
+	},
+	"keycloak": {
+		"host": "http://keycloak:8080"
+	},
+	"redis": {
+		"host": "redis-master",
+		"port": "6379",
+		"password": "CaVttOERn5"
+	}
+}
