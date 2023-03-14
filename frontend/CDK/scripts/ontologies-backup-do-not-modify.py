@@ -94,10 +94,9 @@ def __get_all_classes__(access_token):
 
     return classes
 
-
 def __get_descriptions__(access_token):
 
-    url = f'{BASE_URL}{ENAPSO_NAMESPACE}/v1/get-classes-description'
+    url = f'{BASE_URL}{TEMPLATE_NAMESPACE}/v1/execute-template'
 
     headers = {
         'Content-Type': 'application/json',
@@ -106,8 +105,11 @@ def __get_descriptions__(access_token):
 
     try:
         body = {
-            'graph': SOURCE_GRAPH,
-        }
+            "template": "http://www.ebu.ch/metadata/ontologies/ebucoreplus#SPARQLTemplate_e5e398b0-f9de-417a-b5c1-39f793f30f9d",
+            "variables": {
+                    "language": "en"
+                        }
+                }
         response = requests.post(
             url=url, headers=headers, json=body, timeout=REQUEST_TIMEOUT)
         response.raise_for_status()
@@ -119,18 +121,20 @@ def __get_descriptions__(access_token):
     descriptions = descriptions.get('records')
 
     descriptions_ = {}
-    for item in descriptions:
-        if not item.get('descriptionLang', None) and \
-                not item.get('description', None):
+   for item in descriptions:
+        if not item.get('description', None):
             continue
         entity = item.get('entity')
         if entity in descriptions_:
             descriptions_.get(entity).update(
-                {item.get('descriptionLang'): item.get('description')})
+                {'description': item.get('description'),
+                 'definition': item.get('definition'),
+                 'example': item.get('example')})
         else:
             descriptions_.update(
-                {entity: {item.get('descriptionLang'):
-                          item.get('description')}})
+                {entity: {'description': item.get('description'),
+                          'definition': item.get('definition'),
+                          'example': item.get('example')}})
 
     return descriptions_
 
@@ -563,13 +567,14 @@ def get_description(source_df, iris, language='en', show_table=True):
 
     language_term = LANGUAGE_TERMS.get(language, 'Undefined')
 
+    
     resultant_df.drop_duplicates(subset='IRI', inplace=True)
     resultant_df = resultant_df[resultant_df.columns[resultant_df.columns.isin(
-        ['Label', f'Description ({language_term})'])]]
-    resultant_df.rename(
-        columns={f'Description ({language_term})': 'Description'},
-        inplace=True)
+        ['Label', f'Description ({language_term})', f'Definition ({language_term})', f'Example ({language_term})'])]]
+
     resultant_df.reset_index(drop=True, inplace=True)
+
+
 
     if show_table:
         names = __get_names_from_iris__(iris=iris)
@@ -584,6 +589,7 @@ def get_description(source_df, iris, language='en', show_table=True):
              columnDefs=[ITABLE_COLDEF],
              eval_functions=True,
              tags=ITABLE_TITLE.format(title=title))
+    print(resultant_df)  # add this line
 
     return resultant_df
 

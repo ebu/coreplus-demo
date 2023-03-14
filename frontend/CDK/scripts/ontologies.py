@@ -96,8 +96,7 @@ def __get_all_classes__(access_token):
 
 
 def __get_descriptions__(access_token):
-
-    url = f'{BASE_URL}{ENAPSO_NAMESPACE}/v1/get-classes-description'
+    url = f'{BASE_URL}{TEMPLATE_NAMESPACE}/v1/execute-template'
 
     headers = {
         'Content-Type': 'application/json',
@@ -106,8 +105,9 @@ def __get_descriptions__(access_token):
 
     try:
         body = {
-            'graph': SOURCE_GRAPH,
-        }
+            "template": "http://www.ebu.ch/metadata/ontologies/ebucoreplus#SPARQLTemplate_e5e398b0-f9de-417a-b5c1-39f793f30f9d"
+            }
+        
         response = requests.post(
             url=url, headers=headers, json=body, timeout=REQUEST_TIMEOUT)
         response.raise_for_status()
@@ -131,10 +131,86 @@ def __get_descriptions__(access_token):
             descriptions_.update(
                 {entity: {item.get('descriptionLang'):
                           item.get('description')}})
-
     return descriptions_
 
+def __get_definitions__(access_token):
+    url = f'{BASE_URL}{TEMPLATE_NAMESPACE}/v1/execute-template'
 
+    headers = {
+        'Content-Type': 'application/json',
+        'x-enapso-auth': access_token
+    }
+
+    try:
+        body = {
+            "template": "http://www.ebu.ch/metadata/ontologies/ebucoreplus#SPARQLTemplate_e5e398b0-f9de-417a-b5c1-39f793f30f9d"
+            }
+        
+        response = requests.post(
+            url=url, headers=headers, json=body, timeout=REQUEST_TIMEOUT)
+        response.raise_for_status()
+    except requests.exceptions.RequestException as exception:
+        sys.stdout.write(str(exception))
+        return None
+
+    definitions = response.json()
+    definitions = definitions.get('records')
+
+    definitions = response.json()
+    definitions = definitions.get('records')
+
+    definitions_ = {}
+    for item in definitions:
+        if not item.get('definitionLang', None) and \
+                not item.get('definition', None):
+            continue
+        entity = item.get('entity')
+        if entity in definitions_:
+            definitions_.get(entity).update(
+                {item.get('definitionLang'): item.get('definition')})
+        else:
+            definitions_.update(
+                {entity: {item.get('definitionLang'):
+                          item.get('definition')}})
+    return definitions_
+
+def __get_examples__(access_token):
+    url = f'{BASE_URL}{TEMPLATE_NAMESPACE}/v1/execute-template'
+
+    headers = {
+        'Content-Type': 'application/json',
+        'x-enapso-auth': access_token
+    }
+
+    try:
+        body = {
+            "template": "http://www.ebu.ch/metadata/ontologies/ebucoreplus#SPARQLTemplate_e5e398b0-f9de-417a-b5c1-39f793f30f9d"
+            }
+        
+        response = requests.post(
+            url=url, headers=headers, json=body, timeout=REQUEST_TIMEOUT)
+        response.raise_for_status()
+    except requests.exceptions.RequestException as exception:
+        sys.stdout.write(str(exception))
+        return None
+
+    examples = response.json()
+    examples = examples.get('records')
+
+    examples_ = {}
+    for item in examples:
+        if not item.get('exampleLang', None) and \
+                not item.get('example', None):
+            continue
+        entity = item.get('entity')
+        if entity in examples_:
+            examples_.get(entity).update(
+                {item.get('exampleLang'): item.get('example')})
+        else:
+            examples_.update(
+                {entity: {item.get('exampleLang'):
+                          item.get('example')}})
+    return examples_
 def __remove_nans__(df):
 
     for column in list(df.columns):
@@ -269,7 +345,6 @@ def get_individuals(tenant, username, password, iri, show_table=True):
         'alternativeTitle': 'ec:alternativeTitle',
         'contentDescription': 'ec:contentDescription'
     }
-    individuals_df.rename(columns=column_display_names, inplace=True)
 
     if show_table:
         title=f'Individuals of class {name}'
@@ -307,6 +382,32 @@ def load_model(tenant, username, password):
                         language_term = LANGUAGE_TERMS.get(key, 'Undefined')
                         element.update({f'Description ({language_term})': value})
 
+    def __merge_with_definitions__(classes):
+
+        definitions = __get_definitions__(access_token=access_token)
+
+        for element in classes:
+            iri = element.get('IRI')
+            definition = definitions.get(iri, None)
+            if definition:
+                for key, value in definition.items():
+                    if key in LANGUAGES:
+                        language_term = LANGUAGE_TERMS.get(key, 'Undefined')
+                        element.update({f'Definition ({language_term})': value})
+                        
+    def __merge_with_examples__(classes):
+
+        examples = __get_examples__(access_token=access_token)
+
+        for element in classes:
+            iri = element.get('IRI')
+            example = examples.get(iri, None)
+            if example:
+                for key, value in example.items():
+                    if key in LANGUAGES:
+                        language_term = LANGUAGE_TERMS.get(key, 'Undefined')
+                        element.update({f'Example ({language_term})': value})
+
     access_token = __get_access_token__(
         tenant=tenant, username=username, password=password)
 
@@ -316,7 +417,11 @@ def load_model(tenant, username, password):
     classes = __get_all_classes__(access_token=access_token)
 
     __merge_with_descriptions__(classes)
+    __merge_with_definitions__(classes)
+    __merge_with_examples__(classes)
 
+
+    
     classes_df = pd.DataFrame(classes)
     classes_df = __remove_nans__(classes_df)
 
@@ -410,13 +515,13 @@ def get_hierarchy(source_df,
     resultant_df.sort_values(by=['Label'], inplace=True)
     resultant_df.drop_duplicates(
         subset=['IRI', 'Superclass IRI'], inplace=True)
-    resultant_df.drop(['Description (English)',
-                       'Description (German)',
-                       'Description (French)',
-                       'Language',
-                       'Superclass language'],
-                      axis=1,
-                      inplace=True)
+    #resultant_df.drop(['Description (English)',
+    #                   'Description (German)',
+    #                   'Description (French)',
+    #                   'Language',
+    #                   'Superclass language'],
+     #                 axis=1,
+     #                 inplace=True)
     resultant_df.reset_index(drop=True, inplace=True)
 
     if show_table:
@@ -532,9 +637,10 @@ def get_properties(tenant,
     return properties
 
 
+
 def get_description(source_df, iris, language='en', show_table=True):
 
-    """It extracts descriptions for the given IRI.
+    """It extracts descriptions, definitions, and examples for the given IRIs.
 
     Args:
         source_df (DataFrame): Primary DataFrame to query from.
@@ -546,7 +652,7 @@ def get_description(source_df, iris, language='en', show_table=True):
         Defaults to True.
 
     Returns:
-        DataFrame: The DataFrame holding the description of the class.
+        DataFrame: The DataFrame holding the description, definition, and example of the class.
     """
 
     iris = list(set(iris))
@@ -564,11 +670,12 @@ def get_description(source_df, iris, language='en', show_table=True):
     language_term = LANGUAGE_TERMS.get(language, 'Undefined')
 
     resultant_df.drop_duplicates(subset='IRI', inplace=True)
+    
     resultant_df = resultant_df[resultant_df.columns[resultant_df.columns.isin(
-        ['Label', f'Description ({language_term})'])]]
-    resultant_df.rename(
-        columns={f'Description ({language_term})': 'Description'},
-        inplace=True)
+        ['Label', f'Description ({language_term})', f'Definition ({language_term})', f'Example ({language_term})'])]]
+
+    
+ 
     resultant_df.reset_index(drop=True, inplace=True)
 
     if show_table:
@@ -586,6 +693,8 @@ def get_description(source_df, iris, language='en', show_table=True):
              tags=ITABLE_TITLE.format(title=title))
 
     return resultant_df
+
+
 
 
 def get_hierarchy_graph(tenant,
@@ -875,7 +984,7 @@ def __get_network_graph__(tenant,
                 properties += all_properties.get('ObjectProperty', [])
 
                 for property_ in properties:
-                    range_ = property_.get('range')
+                    range_ = property_.get('property')
                     if range_ not in nodes:
                         name = __get_name_from_iri__(range_)
                         node = {
@@ -945,6 +1054,8 @@ def __get_network_graph__(tenant,
                              arrowStrikethrough=True)
 
     return graph
+
+
 def get_individual_properties_graph(tenant, username, password, iri):
     """It generates a Network object of the class properties for the given
     list of IRIs.
